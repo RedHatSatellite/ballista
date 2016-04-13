@@ -9,7 +9,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('covname', help='Name of the composite content view to recursively promote')
     parser.add_argument('view_type', help='Type of the views to promote as defined in the config file')
-    parser.add_argument('conf_file', help='path to the file with the Satellite 6 config')
+    parser.add_argument('conf_file', help='path to the file with the Satellite 6 config', default='promoter.ini')
     args = parser.parse_args()
     config = ConfigParser()
     config.read(args.conf_file)
