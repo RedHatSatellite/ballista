@@ -21,6 +21,6 @@ views = oracle_11g, jboss_eap
   
 We can promote the os views when we are ready to patch:
 
-  promote_cv_chain.py os
+> promote_cv_chain.py os
   
 This will publish new versions of the **oracle_11g** and **jboss_eap** content views as well as any composite views that containt these. Note that the latter are not promoted, only published.
