@@ -4,15 +4,15 @@ from katlibs.katello_helpers import KatelloConnection
 from katlibs.cview_helpers import recursive_update
 from ConfigParser import ConfigParser
 from getpass import getpass
-try:
-    import argparse
-except ImportError:
-    import argparse_local as argparse
+import argparse
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config. Defaults to ./chain_config', default='chain_config.ini')
+    parser.add_argument('-c', '--conf_file',
+                        help='path to the file with the Satellite 6 config. Defaults to ./chain_config',
+                        default='chain_config.ini',
+                        )
     parser.add_argument('view_type', help='Type of the views to promote as defined in the config file')
     args = parser.parse_args()
     config = ConfigParser()

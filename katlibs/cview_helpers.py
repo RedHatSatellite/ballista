@@ -1,4 +1,3 @@
-
 def get_components(datalist, index):
     # Given a list of dictionaries, return the first key encountered in the first dict
     # so given datalist =
@@ -44,10 +43,10 @@ def update_and_publish_comp(connection, compview, version_dict):
     connection.update_view(compview['id'], {
         'id': compview['id'],
         'component_ids': version_list,
-        })
+    })
 
     connection.publish_view(compview['id'])
-    
+
 
 def recursive_update(connection, cvs):
     all_views = connection.content_views
@@ -57,14 +56,16 @@ def recursive_update(connection, cvs):
 
     # Get ids of views
     for view in all_views:
-        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if c['content_view']['name'] in cvs]
+        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
+                                                 c['content_view']['name'] in cvs]
 
     for cvid in viewids_to_update:
         connection.publish_view(cvid, {'id': cvid})
 
     # Find which composites are impacted
     for view in all_views:
-        if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(viewids_to_update):
+        if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
+                viewids_to_update):
             comps_to_update.append(view)
 
     # Get the ids of the new versions
