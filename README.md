@@ -23,7 +23,7 @@ We can promote the os views when we are ready to patch:
 
 > promote_cv_chain.py os
   
-This will publish new versions of the **oracle_11g** and **jboss_eap** content views as well as any composite views that containt these. Note that the latter are not promoted, only published.
+This will publish new versions of the **redhat_base** and **redhat_extras** content views as well as any composite views that containt these. Note that the latter are not promoted, only published.
 
 # State of the code
 
