@@ -1,3 +1,5 @@
+import time
+
 def get_components(datalist, index):
     # Given a list of dictionaries, return the first key encountered in the first dict
     # so given datalist =
@@ -73,6 +75,23 @@ def recursive_update(connection, cvs):
         versions = get_components(connection.content_views, ('id', cvid))['versions']
         latest_version = get_latest_version_id(versions)
         version_dict[str(cvid)] = latest_version
+
+    # Wait until all the views are done #TODO: we might want to log this, so we can give feedback on cli
+    done_tasks = list()
+    while True:
+        all_tasks = connection.foreman_tasks
+        for taskid in viewids_to_update:
+            for task in all_tasks:
+                try:
+                    if task['input']['content_view']['id'] == taskid and not task['state'] == 'running':
+                        if task['label'] == 'Actions::Katello::ContentView::Publish':
+                            done_tasks.append(taskid)
+                except KeyError:
+                    pass
+        if len(done_tasks) == len(viewids_to_update):
+            break
+
+        time.sleep(10)
 
     for view in comps_to_update:
         update_and_publish_comp(connection, view, version_dict)
