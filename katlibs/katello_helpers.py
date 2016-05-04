@@ -36,10 +36,14 @@ class KatelloConnection(object):
         if not uri == 'organizations/' and not clean:
             uri = 'organizations/%s/%s' % (self.orgid, uri)
 
-        return self.session.get(
-            '%s/katello/api/v2/%s?per_page=99999' % (self.base_url, uri),
-            verify=self.verify,
-        ).json()['results']
+        try:
+            return self.session.get(
+                '%s/katello/api/v2/%s?per_page=99999' % (self.base_url, uri),
+                verify=self.verify,
+            ).json()['results']
+        except KeyError as e:
+            e.message = 'Could not query Satellite 6. Maybe wrong organization or URL specified?'
+            raise
 
     def _get_foreman_dict(self, uri):
         return self.session.get(
