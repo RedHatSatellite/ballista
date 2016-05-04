@@ -1,5 +1,16 @@
 import time
 
+
+def get_running_publishes(tasklist):
+    # Returns a list of content view ids that are being published
+    running_publishes = list()
+    for task in tasklist:
+        if task['state'] == 'running' and task['label'] == 'Actions::Katello::ContentView::Publish':
+            running_publishes.append(task['input']['content_view']['id'])
+
+    return running_publishes
+
+
 def get_components(datalist, index):
     # Given a list of dictionaries, return the first key encountered in the first dict
     # so given datalist =
@@ -61,6 +72,9 @@ def recursive_update(connection, cvs):
         viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
                                                  c['content_view']['name'] in cvs]
 
+    # make viewids unique
+    viewids_to_update = list(set(viewids_to_update))
+
     for cvid in viewids_to_update:
         connection.publish_view(cvid, {'id': cvid})
 
@@ -77,21 +91,11 @@ def recursive_update(connection, cvs):
         version_dict[str(cvid)] = latest_version
 
     # Wait until all the views are done #TODO: we might want to log this, so we can give feedback on cli
-    done_tasks = list()
     while True:
-        all_tasks = connection.foreman_tasks
-        for taskid in viewids_to_update:
-            for task in all_tasks:
-                try:
-                    if task['input']['content_view']['id'] == taskid and not task['state'] == 'running':
-                        if task['label'] == 'Actions::Katello::ContentView::Publish':
-                            done_tasks.append(taskid)
-                except KeyError:
-                    pass
-        if len(done_tasks) == len(viewids_to_update):
+        if set(get_running_publishes(connection.foreman_tasks)).intersection(viewids_to_update):
+            time.sleep(10)
+        else:
             break
-
-        time.sleep(10)
 
     for view in comps_to_update:
         update_and_publish_comp(connection, view, version_dict)
