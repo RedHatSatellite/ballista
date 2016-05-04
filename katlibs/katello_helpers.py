@@ -27,6 +27,10 @@ class KatelloConnection(object):
             if 'orgid' not in self.__dict__:
                 self.orgid = self._get_orgid()
                 return self.orgid
+
+        if item == 'foreman_tasks':
+            return self.session.get('%s/foreman_tasks/api/tasks' % self.base_url, verify=self.verify).json()['results']
+
         try:
             return self._get_katello_dict('%s/' % item)
         except ValueError:
