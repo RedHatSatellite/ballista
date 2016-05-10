@@ -1,5 +1,7 @@
 import requests
+import sys
 import json
+import os
 
 
 def to_dict(result_list):
@@ -29,7 +31,7 @@ class KatelloConnection(object):
                 return self.orgid
 
         if item == 'foreman_tasks':
-            return self.session.get('%s/foreman_tasks/api/tasks' % self.base_url, verify=self.verify).json()['results']
+            return self.session.get('%s/foreman_tasks/api/tasks' % (self.base_url), verify=self.verify).json()['results']
 
         try:
             return self._get_katello_dict('%s/' % item)
@@ -40,20 +42,10 @@ class KatelloConnection(object):
         if not uri == 'organizations/' and not clean:
             uri = 'organizations/%s/%s' % (self.orgid, uri)
 
-        try:
-            return self.session.get(
-                '%s/katello/api/v2/%s?per_page=99999' % (self.base_url, uri),
-                verify=self.verify,
-            ).json()['results']
-        except KeyError as e:
-            e.message = 'Could not query Satellite 6. Maybe wrong organization or URL specified?'
-            raise
+        return self.session.get('%s/katello/api/v2/%s?per_page=99999' % (self.base_url, uri), verify=self.verify).json()['results']
 
     def _get_foreman_dict(self, uri):
-        return self.session.get(
-            '%s/api/v2/%s?per_page=99999' % (self.base_url, uri),
-            verify=self.verify,
-        ).json()['results']
+        return self.session.get('%s/api/v2/%s?per_page=99999' % (self.base_url, uri), verify=self.verify).json()['results']
 
     def _get_orgid(self):
         for org in self.organizations:
@@ -62,7 +54,7 @@ class KatelloConnection(object):
 
     def get_collection_contents(self, collection_name):
         col_id = [h['id'] for h in self.host_collections if h['name'] == collection_name][0]
-        return self._get_katello_dict('host_collections/%s/systems' % col_id, clean=True)
+        return self._get_katello_dict('host_collections/%s/systems' % (col_id), clean=True)
 
     def publish_view(self, c_id, data=None):
         return self.session.post(
