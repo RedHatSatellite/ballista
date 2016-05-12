@@ -25,6 +25,30 @@ We can promote the os views when we are ready to patch:
   
 This will publish new versions of the **redhat_base** and **redhat_extras** content views as well as any composite views that containt these. Note that the latter are not promoted, only published.
 
+# cleanout_view.py
+
+Remove every unused version from a Content View (versions that have no environments associated).
+
+```
+usage: cleanout_view.py [-h] [-c CONF_FILE] view_name
+
+positional arguments:
+  view_name             Name of the view to clean the versions of
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONF_FILE, --config CONF_FILE
+                        Location of the config file
+
+```
+
+where the ini file should look like:
+```
+[main]
+url = https://satellite6.example.com
+organization = Default_Organization
+```
+
 # State of the code
 
 Please note that while this code is used in semi-production, there is still a lack of things like error-handling and
