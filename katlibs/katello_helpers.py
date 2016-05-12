@@ -58,14 +58,20 @@ class KatelloConnection(object):
 
     def publish_view(self, c_id, data=None):
         return self.session.post(
-                '%s/katello/api/content_views/%s/publish' % (self.base_url, c_id),
-                data=json.dumps(data),
-                headers=self.post_headers,
-                ).json()
+            '%s/katello/api/content_views/%s/publish' % (self.base_url, c_id),
+            data=json.dumps(data),
+            headers=self.post_headers,
+        ).json()
 
     def update_view(self, c_id, data=None):
         return self.session.put(
-                '%s/katello/api/content_views/%s' % (self.base_url, c_id),
-                data=json.dumps(data),
-                headers=self.post_headers,
-                ).json()
+            '%s/katello/api/content_views/%s' % (self.base_url, c_id),
+            data=json.dumps(data),
+            headers=self.post_headers,
+        ).json()
+
+    def remove_view_version(self, v_id):
+        return self.session.delete(
+            '%s/katello/api/content_view_versions/%s' % (self.base_url, v_id),
+            headers=self.post_headers,
+        ).json()
