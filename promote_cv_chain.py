@@ -2,17 +2,19 @@
 
 from katlibs.katello_helpers import KatelloConnection
 from katlibs.cview_helpers import recursive_update
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 from getpass import getpass
 import argparse
 import logging
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config', default='chain_config.ini')
+    parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config',
+                        default='chain_config.ini')
     parser.add_argument('-d', '--debug', help='Enable debugging', default=False, action='store_true')
-    parser.add_argument('view_type', help='Type of the views to promote as defined in the config file')
+    parser.add_argument('view_type',
+                        help='''Type of the views to promote as defined in the config file.
+                        If it is not found it is presumed to be the name of a content view.''')
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -24,7 +26,12 @@ if __name__ == '__main__':
     username = raw_input('Username: ')
     password = getpass('Password: ')
     organization = config.get('main', 'organization')
-    baseviews = [v.strip() for v in config.get(args.view_type, 'views').split(',')]
+
+    try:
+        baseviews = [v.strip() for v in config.get(args.view_type, 'views').split(',')]
+    except NoOptionError:
+        baseviews = [args.view_type]
+
     logging.debug('Updating {}'.format(baseviews))
     logging.debug('Using the following for building the connection')
     logging.debug('url: {}'.format(url))

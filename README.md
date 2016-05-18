@@ -4,7 +4,7 @@ Library to query and update objects in Satellite 6 such as hosts and content vie
 
 # promote_cv_chain.py
 
-Publish and promote a content view and all composite views that use it. To define the view an ini file is used to group them.  
+Publish and promote a content view and all composite views that use it. To define the view an ini file can be used to group them.
 Assuming you have in the same directory in chain_config.ini:
 
 ```
@@ -21,7 +21,11 @@ views = oracle_11g, jboss_eap
   
 We can promote the os views when we are ready to patch:
 
-> promote_cv_chain.py os
+> promote_cv_chain.py -c /path/to/config os
+
+Or, if we only want to do oracle_11g:
+
+> promote_cv_chain.py -c /path/to/config oracle_11g
   
 This will publish new versions of the **redhat_base** and **redhat_extras** content views as well as any composite views that containt these. Note that the latter are not promoted, only published.
 
@@ -39,7 +43,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -c CONF_FILE, --config CONF_FILE
                         Location of the config file
-
 ```
 
 where the ini file should look like:
