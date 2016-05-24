@@ -42,8 +42,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help='Location of the config file', dest='conf_file')
     parser.add_argument('-a', '--all', help='Clean all unused versions in all content views', default=False, action='store_true')
-    parser.add_argument('view_name', help='Clean all unused versions in a specific content view', nargs='*')
+    parser.add_argument('view_name', help='Clean all unused versions in a specific content view (only required if no --all option is given)', nargs='*')
     args = parser.parse_args()
+    if not args.view_name and not args.all:
+        logging.error('No view or --all argument given!')
+        sys.exit(1)
     config = ConfigParser()
     config.read(args.conf_file)
     url = config.get('main', 'url')
@@ -55,8 +58,4 @@ if __name__ == '__main__':
         for view in connection.content_views:
             main(view['name'], connection)
     else:
-        if args.view_name:
-            main(args.view_name[0], connection)
-        else:
-            logging.error('No view or --all argument given!')
-            sys.exit(1)
+        main(args.view_name[0], connection)
