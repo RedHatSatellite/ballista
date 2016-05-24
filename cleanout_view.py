@@ -21,12 +21,18 @@ from ConfigParser import ConfigParser
 from getpass import getpass
 import logging
 import argparse
+import sys
 
 
 def main(view_name, connection):
-    all_views = connection.content_views
-    view_dict = get_components(all_views, ('name', view_name))
-    ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
+    view_dict = get_components(connection.content_views, ('name', view_name))
+    try:
+        ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
+    except TypeError:
+        logging.error('View {} not found!'.format(view_name))
+        raise
+        # TODO: generate proper raise
+
     for version_id in ids_to_remove:
         logging.info('Removing version_id {}'.format(version_id))
         connection.remove_view_version(version_id)
@@ -35,7 +41,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help='Location of the config file', dest='conf_file')
-    parser.add_argument('view_name', help='Name of the view to clean the versions of')
+    parser.add_argument('-a', '--all', help='Clean all unused versions in all content views', default=False, action='store_true')
+    parser.add_argument('view_name', help='Clean all unused versions in a specific content view', nargs='*')
     args = parser.parse_args()
     config = ConfigParser()
     config.read(args.conf_file)
@@ -44,4 +51,12 @@ if __name__ == '__main__':
     password = getpass('Password: ')
     organization = config.get('main', 'organization')
     connection = KatelloConnection(url, username, password, verify=False, organization=organization)
-    main(args.view_name, connection)
+    if args.all:
+        for view in connection.content_views:
+            main(view['name'], connection)
+    else:
+        if args.view_name:
+            main(args.view_name[0], connection)
+        else:
+            logging.error('No view or --all argument given!')
+            sys.exit(1)
