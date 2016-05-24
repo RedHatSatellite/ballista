@@ -34,15 +34,17 @@ This will publish new versions of the **redhat_base** and **redhat_extras** cont
 Remove every unused version from a Content View (versions that have no environments associated).
 
 ```
-usage: cleanout_view.py [-h] [-c CONF_FILE] view_name
+usage: cleanout_view.py [-h] [-c CONF_FILE] [-a] [view_name]
 
 positional arguments:
-  view_name             Name of the view to clean the versions of
+  view_name             Clean all unused versions in a specific content view
+                        (only required if no --all option is given)
 
 optional arguments:
   -h, --help            show this help message and exit
   -c CONF_FILE, --config CONF_FILE
                         Location of the config file
+  -a, --all             Clean all unused versions in all content views
 ```
 
 where the ini file should look like:
