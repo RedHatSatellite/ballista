@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Copyright (c) 2016 Yoram Hekma <hekma.yoram@gmail.com>
 # 
