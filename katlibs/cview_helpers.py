@@ -16,6 +16,7 @@
 import time
 import logging
 
+
 def get_running_publishes(tasklist):
     logging.debug('Check for running publish tasks')
     # Returns a list of content view ids that are being published
@@ -26,6 +27,7 @@ def get_running_publishes(tasklist):
             running_publishes.append(task['input']['content_view']['id'])
 
     return running_publishes
+
 
 def get_components(datalist, index):
     # Given a list of dictionaries, return the first key encountered in the first dict
@@ -77,11 +79,11 @@ def update_and_publish_comp(connection, compview, version_dict):
     connection.update_view(compview['id'], {
         'id': compview['id'],
         'component_ids': version_list,
-        })
+    })
 
     logging.debug('Publishing {}'.format(compview['name']))
     connection.publish_view(compview['id'])
-    
+
 
 def recursive_update(connection, cvs):
     logging.debug('Going to update {}'.format(cvs))
@@ -94,7 +96,8 @@ def recursive_update(connection, cvs):
     # Get ids of views
     logging.debug('Getting ids of views that need to be updated')
     for view in all_views:
-        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if c['content_view']['name'] in cvs]
+        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
+                                                 c['content_view']['name'] in cvs]
 
     viewids_to_update = list(set(viewids_to_update))
 
@@ -105,7 +108,8 @@ def recursive_update(connection, cvs):
     # Find which composites are impacted
     logging.debug('Check which composite content views need to be updated')
     for view in all_views:
-        if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(viewids_to_update):
+        if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
+                viewids_to_update):
             logging.debug('{} is composite and needs to be updated'.format(view['name']))
             comps_to_update.append(view)
 
