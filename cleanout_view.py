@@ -41,8 +41,10 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help='Location of the config file', dest='conf_file')
-    parser.add_argument('-a', '--all', help='Clean all unused versions in all content views', default=False, action='store_true')
-    parser.add_argument('view_name', help='Clean all unused versions in a specific content view (only required if no --all option is given)', nargs='*')
+    parser.add_argument('-a', '--all', help='Clean all unused versions in all content views',
+                        default=False, action='store_true')
+    parser.add_argument('view_name', help='''Clean all unused versions in a specific content view'
+                                          '(only required if no --all option is given)''', nargs='*')
     args = parser.parse_args()
     if not args.view_name and not args.all:
         logging.error('No view or --all argument given!')
