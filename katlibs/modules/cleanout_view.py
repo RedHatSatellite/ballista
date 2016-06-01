@@ -35,12 +35,12 @@ def main(view_name, connection):
     try:
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
     except TypeError:
-        logging.error('View {} not found!'.format(view_name))
+        logging.error('View %s not found!' % view_name)
         raise
         # TODO: generate proper raise
 
     for version_id in ids_to_remove:
-        logging.info('Removing version_id {}'.format(version_id))
+        logging.info('Removing version_id %s' % version_id)
         connection.remove_view_version(version_id)
 
 if __name__ == '__main__':

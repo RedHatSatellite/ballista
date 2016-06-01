@@ -23,7 +23,7 @@ def get_running_publishes(tasklist):
     running_publishes = list()
     for task in tasklist:
         if task['state'] == 'running' and task['label'] == 'Actions::Katello::ContentView::Publish':
-            logging.debug('Publish task {} is still running'.format(task))
+            logging.debug('Publish task %s is still running' % task)
             running_publishes.append(task['input']['content_view']['id'])
 
     return running_publishes
@@ -64,10 +64,10 @@ def update_and_publish_comp(connection, compview, version_dict):
 
     version_list = list()
 
-    logging.debug('Getting component content view ids from {}'.format(compview['name']))
+    logging.debug('Getting component content view ids from %s' % compview['name'])
     for component in compview['components']:
         cv_id = component['content_view_id']
-        logging.debug('{} --> {}'.format(component['name'], cv_id))
+        logging.debug('%s --> %s' % (component['name'], cv_id))
         try:
             logging.debug('Version updated, registering new version id')
             version_list.append(version_dict[str(cv_id)])
@@ -75,18 +75,18 @@ def update_and_publish_comp(connection, compview, version_dict):
             logging.debug('Version unchanged')
             version_list.append(component['id'])
 
-    logging.debug('Updating {} with new component ids {}'.format(compview['name'], version_list))
+    logging.debug('Updating %s with new component ids %s' % (compview['name'], version_list))
     connection.update_view(compview['id'], {
         'id': compview['id'],
         'component_ids': version_list,
     })
 
-    logging.debug('Publishing {}'.format(compview['name']))
+    logging.debug('Publishing %s' % (compview['name']))
     connection.publish_view(compview['id'])
 
 
 def recursive_update(connection, cvs):
-    logging.debug('Going to update {}'.format(cvs))
+    logging.debug('Going to update %s' % cvs)
     logging.debug('Get all content views')
     all_views = connection.content_views
     version_dict = dict()
@@ -102,7 +102,7 @@ def recursive_update(connection, cvs):
     viewids_to_update = list(set(viewids_to_update))
 
     for cvid in viewids_to_update:
-        logging.info('Publishing id {}'.format(cvid))
+        logging.info('Publishing id %s' % cvid)
         connection.publish_view(cvid, {'id': cvid})
 
     # Find which composites are impacted
@@ -110,16 +110,16 @@ def recursive_update(connection, cvs):
     for view in all_views:
         if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
                 viewids_to_update):
-            logging.debug('{} is composite and needs to be updated'.format(view['name']))
+            logging.debug('%s is composite and needs to be updated' % view['name'])
             comps_to_update.append(view)
 
     # Get the ids of the new versions
     logging.debug('Check ids of the new versions')
     for cvid in viewids_to_update:
-        logging.debug('Check cvid {}'.format(cvid))
+        logging.debug('Check cvid %s' % cvid)
         versions = get_components(connection.content_views, ('id', cvid))['versions']
         latest_version = get_latest_version_id(versions)
-        logging.debug('Latest version id: {}'.format(latest_version))
+        logging.debug('Latest version id: %s' % latest_version)
         version_dict[str(cvid)] = latest_version
 
     # Wait until all the cvs are updated
@@ -131,5 +131,5 @@ def recursive_update(connection, cvs):
             break
 
     for view in comps_to_update:
-        logging.info('Update and publish {}'.format(view['name']))
+        logging.info('Update and publish %s' % view['name'])
         update_and_publish_comp(connection, view, version_dict)
