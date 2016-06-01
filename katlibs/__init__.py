@@ -11,5 +11,6 @@ for f in os.listdir('%s/modules/' % dirname):
         mod = imp.load_source(module_name, '%s/modules/%s' % (dirname, f))
         modules[module_name] = mod
 
+
 def get_modules():
     return modules
