@@ -50,11 +50,11 @@ if __name__ == '__main__':
     except NoOptionError:
         baseviews = [args.view_type]
 
-    logging.debug('Updating {}'.format(baseviews))
+    logging.debug('Updating %s' % baseviews)
     logging.debug('Using the following for building the connection')
-    logging.debug('url: {}'.format(url))
-    logging.debug('username: {}'.format(username))
+    logging.debug('url: %s' % url)
+    logging.debug('username: %s' % username)
     logging.debug('password: <redacted>')
-    logging.debug('organization: {}'.format(organization))
+    logging.debug('organization: %s' % organization)
     connection = KatelloConnection(url, username, password, verify=False, organization=organization)
     recursive_update(connection, baseviews)
