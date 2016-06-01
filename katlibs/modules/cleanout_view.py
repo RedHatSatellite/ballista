@@ -30,7 +30,7 @@ except ImportError:
     import katlibs.main.argparse_local as argparse
 
 
-def main(view_name, connection):
+def main(view_name, connection, **kwargs):
     view_dict = get_components(connection.content_views, ('name', view_name))
     try:
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
