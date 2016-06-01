@@ -76,4 +76,6 @@ if args.password:
 else:
     password = config.get('main', 'password')
 
-mod = modules[args.funcname]
+passed_args = vars(args)
+passed_args['connection'] = 'bla' # TODO: build connection
+mod = modules[args.funcname].main(**passed_args)
