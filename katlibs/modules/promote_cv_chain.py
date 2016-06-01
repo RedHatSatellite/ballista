@@ -15,15 +15,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from katlibs.katello_helpers import KatelloConnection
-from katlibs.cview_helpers import recursive_update
+import logging
 from ConfigParser import ConfigParser, NoOptionError
 from getpass import getpass
-import logging
+
+from katlibs.main.cview_helpers import recursive_update
+
+from katlibs.main.katello_helpers import KatelloConnection
+
 try:
     import argparse
 except ImportError:
-    import katlibs.argparse_local as argparse
+    import katlibs.main.argparse_local as argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -15,16 +15,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from katlibs.katello_helpers import KatelloConnection
-from katlibs.cview_helpers import get_components
+import logging
+import sys
 from ConfigParser import ConfigParser
 from getpass import getpass
-import sys
-import logging
+
+from katlibs.main.cview_helpers import get_components
+
+from katlibs.main.katello_helpers import KatelloConnection
+
 try:
     import argparse
 except ImportError:
-    import katlibs.argparse_local as argparse
+    import katlibs.main.argparse_local as argparse
 
 
 def main(view_name, connection):
