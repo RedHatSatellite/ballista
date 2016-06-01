@@ -35,8 +35,8 @@ def conf_to_dict(cfg):
     return result_dict
 
 parser = argparse.ArgumentParser()
-parser.add_argument('module', dest='mod_name')
-parser.add_argument('action', dest='action')
+parser.add_argument('module')
+parser.add_argument('action')
 parser.add_argument('--list', help='List available actions.', action='store_true', default=False)
 parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config',
                     default='/etc/ballista/config.ini')
