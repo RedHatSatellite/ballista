@@ -70,7 +70,10 @@ class KatelloConnection(object):
 
     def _get_katello_dict(self, uri, clean=False):
         if not uri == 'organizations/' and not clean:
-            uri = 'organizations/%s/%s' % (self.orgid, uri)
+            try:
+                return self._query_api('%s/katello/api/v2/organizations/%s/%s' % (self.base_url, self.orgid, uri))
+            except ValueError:
+                pass
 
         return self._query_api('%s/katello/api/v2/%s' % (self.base_url, uri))
 
