@@ -1,4 +1,4 @@
-# satellite6_tools
+# Ballista
 
 Library to query and update objects in Satellite 6 such as hosts and content views.
 
