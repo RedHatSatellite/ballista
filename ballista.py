@@ -19,42 +19,61 @@ from ConfigParser import ConfigParser
 from getpass import getpass
 import sys
 from katlibs import modules
-from collections import defaultdict
 try:
     import argparse
 except ImportError:
     import katlibs.main.argparse_local as argparse
 
+try:
+    if sys.argv[1] == '--list':
+        print '\n'.join(modules.keys())
+        sys.exit()
+except IndexError:
+    pass
 
-def conf_to_dict(cfg):
-    result_dict = defaultdict(dict)
-    for section in cfg.sections():
-        for key in config.items(section):
-            result_dict[section][key[0]] = key[1]
-
-    return result_dict
-
-parser = argparse.ArgumentParser()
-parser.add_argument('module', nargs='*')
-parser.add_argument('action', nargs='*')
-parser.add_argument('--list', help='List available actions.', action='store_true', default=False)
+parser = argparse.ArgumentParser(prog='ballista.py')
+subparsers = parser.add_subparsers(help='sub-command help')
+parser.add_argument('--list', help='List available actions.', action='store_true')
 parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config',
                     default='/etc/ballista/config.ini')
 parser.add_argument('--url', help='Url to connect to (for example https://satellite6.example.com).')
 parser.add_argument('-u', '--username')
+parser.add_argument('-p', help='Ask for password on the command line.', action='store_true',
+                    default=False, dest='password')
 parser.add_argument('--organization', help='Name of the organization')
+
+parser_cview = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
+parser_cview.add_argument('view_name', nargs='?')
+parser_cview.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
+parser_cview.set_defaults(funcname='cleanout_view')
+
+parser_promote = subparsers.add_parser('promote_chain',
+                                       help='Promote a content view and all composites that contain it')
+parser_promote.add_argument('view_name', nargs='?')
+parser_promote.set_defaults(funcname='promote_chain')
 args = parser.parse_args()
 
-if args.list:
-    print '\n'.join(modules.keys())
-    sys.exit()
-
 config = ConfigParser()
-conf_dict = conf_to_dict(config.read(args.conf_file))
+config.read(args.conf_file)
 
-url = conf_dict['main'].get('url', args.url)
-username = conf_dict['main'].get('user', args.username)
-password = conf_dict['main'].get('password', getpass('Password: '))
-organization = conf_dict['main'].get('organization', args.organization)
+if not args.url:
+    url = config.get('main', 'url')
+else:
+    url = args.url
 
-action = modules[args.module].main
+if not args.username:
+    username = config.get('main', 'username')
+else:
+    username = args.username
+
+if not args.organization:
+    organization = config.get('main', 'organization')
+else:
+    organization = args.organization
+
+if args.password:
+    password = getpass('Password: ')
+else:
+    password = config.get('main', 'password')
+
+mod = modules[args.funcname]
