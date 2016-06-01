@@ -38,6 +38,22 @@ class KatelloConnection(object):
             from requests.packages.urllib3.exceptions import InsecureRequestWarning
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+    def _query_api(self, url):
+        if url.endswith('/'):
+            url = url[:-1]
+
+        counter = 1
+        results = list()
+
+        while True:
+            page_result = self.session.get('%s?page=%s' % (url, counter), verify=self.verify).json()['results']
+            if not page_result:
+                break
+            results += page_result
+            counter += 1
+
+        return results
+
     def __getattr__(self, item):
         if item == 'orgid':
             if 'orgid' not in self.__dict__:
@@ -56,12 +72,10 @@ class KatelloConnection(object):
         if not uri == 'organizations/' and not clean:
             uri = 'organizations/%s/%s' % (self.orgid, uri)
 
-        return self.session.get('%s/katello/api/v2/%s?per_page=99999' % (self.base_url, uri),
-                                verify=self.verify).json()['results']
+        return self._query_api('%s/katello/api/v2/%s' % (self.base_url, uri))
 
     def _get_foreman_dict(self, uri):
-        return self.session.get('%s/api/v2/%s?per_page=99999' % (self.base_url, uri),
-                                verify=self.verify).json()['results']
+        return self._query_api('%s/api/v2/%s' % (self.base_url, uri))
 
     def _get_orgid(self):
         for org in self.organizations:
