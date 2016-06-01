@@ -19,9 +19,12 @@ from katlibs.katello_helpers import KatelloConnection
 from katlibs.cview_helpers import get_components
 from ConfigParser import ConfigParser
 from getpass import getpass
-import logging
-import argparse
 import sys
+import logging
+try:
+    import argparse
+except ImportError:
+    import katlibs.argparse_local as argparse
 
 
 def main(view_name, connection):
@@ -55,9 +58,9 @@ if __name__ == '__main__':
     username = raw_input('Username: ')
     password = getpass('Password: ')
     organization = config.get('main', 'organization')
-    connection = KatelloConnection(url, username, password, verify=False, organization=organization)
+    katello_connection = KatelloConnection(url, username, password, verify=False, organization=organization)
     if args.all:
-        for view in connection.content_views:
-            main(view['name'], connection)
+        for view in katello_connection.content_views:
+            main(view['name'], katello_connection)
     else:
-        main(args.view_name[0], connection)
+        main(args.view_name[0], katello_connection)

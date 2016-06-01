@@ -19,8 +19,11 @@ from katlibs.katello_helpers import KatelloConnection
 from katlibs.cview_helpers import recursive_update
 from ConfigParser import ConfigParser, NoOptionError
 from getpass import getpass
-import argparse
 import logging
+try:
+    import argparse
+except ImportError:
+    import katlibs.argparse_local as argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
