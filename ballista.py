@@ -19,10 +19,7 @@ from ConfigParser import ConfigParser
 from getpass import getpass
 import sys
 from katlibs import modules
-try:
-    import argparse
-except ImportError:
-    import katlibs.main.argparse_local as argparse
+import argparse
 
 try:
     if sys.argv[1] == '--list':
