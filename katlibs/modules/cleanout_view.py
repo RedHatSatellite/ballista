@@ -16,7 +16,7 @@
 #
 
 import logging
-from katlibs.main.cview_helpers import get_components
+from katlibs.main.katello_helpers import get_components
 
 
 def main(view_name, connection, **kwargs):
