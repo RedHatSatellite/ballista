@@ -19,6 +19,7 @@ from ConfigParser import ConfigParser
 from getpass import getpass
 import sys
 from katlibs import modules
+from katlibs.main.katello_helpers import KatelloConnection
 import argparse
 
 try:
@@ -74,5 +75,5 @@ else:
     password = config.get('main', 'password')
 
 passed_args = vars(args)
-passed_args['connection'] = 'bla'  # TODO: build connection
+passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 mod = modules[args.funcname].main(**passed_args)
