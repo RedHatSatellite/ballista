@@ -108,3 +108,23 @@ class KatelloConnection(object):
             '%s/katello/api/content_view_versions/%s' % (self.base_url, v_id),
             headers=self.post_headers,
         ).json()
+
+
+def get_components(datalist, index):
+    # Given a list of dictionaries, return the first key encountered in the first dict
+    # so given datalist =
+    # [{'name': 'name1', 'val1': 'val1'}, {'name': 'name2', 'val': 'val2'}]
+    # we can get only the second item:
+    # get_components(datalist, ('name', 'name2'))
+
+    search_key = index[0]
+    search_val = index[1]
+
+    for structure in datalist:
+        try:
+            if structure[search_key] == search_val:
+                return structure
+        except KeyError:
+            pass
+
+    return None
