@@ -47,7 +47,7 @@ parser_cview.set_defaults(funcname='cleanout_view')
 
 parser_promote = subparsers.add_parser('promote_chain',
                                        help='Promote a content view and all composites that contain it')
-parser_promote.add_argument('view_name', nargs='?')  # TODO: we want this to be a list
+parser_promote.add_argument('baseviews', nargs='*')
 parser_promote.set_defaults(funcname='promote_chain')
 args = parser.parse_args()
 
