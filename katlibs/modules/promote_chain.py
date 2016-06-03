@@ -16,6 +16,7 @@
 #
 
 import time
+from katlibs.main.katello_helpers import get_components
 
 
 def get_running_publishes(tasklist):
@@ -26,26 +27,6 @@ def get_running_publishes(tasklist):
             running_publishes.append(task['input']['content_view']['id'])
 
     return running_publishes
-
-
-def get_components(datalist, index):
-    # Given a list of dictionaries, return the first key encountered in the first dict
-    # so given datalist =
-    # [{'name': 'name1', 'val1': 'val1'}, {'name': 'name2', 'val': 'val2'}]
-    # we can get only the second item:
-    # get_components(datalist, ('name', 'name2'))
-
-    search_key = index[0]
-    search_val = index[1]
-
-    for structure in datalist:
-        try:
-            if structure[search_key] == search_val:
-                return structure
-        except KeyError:
-            pass
-
-    return None
 
 
 def get_latest_version_id(version_list):
@@ -117,5 +98,6 @@ def recursive_update(connection, cvs):
         update_and_publish_comp(connection, view, version_dict)
 
 
+# noinspection PyUnusedLocal
 def main(baseviews, connection, **kwargs):
     recursive_update(connection, baseviews)

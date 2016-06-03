@@ -19,6 +19,7 @@ import logging
 from katlibs.main.katello_helpers import get_components
 
 
+# noinspection PyUnusedLocal
 def main(view_name, connection, **kwargs):
     view_dict = get_components(connection.content_views, ('name', view_name))
     try:
