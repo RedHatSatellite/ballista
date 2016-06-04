@@ -19,10 +19,8 @@ from ConfigParser import ConfigParser
 from getpass import getpass
 import sys
 from katlibs import modules
-try:
-    import argparse
-except ImportError:
-    import katlibs.main.argparse_local as argparse
+from katlibs.main.katello_helpers import KatelloConnection
+import argparse
 
 try:
     if sys.argv[1] == '--list':
@@ -49,7 +47,7 @@ parser_cview.set_defaults(funcname='cleanout_view')
 
 parser_promote = subparsers.add_parser('promote_chain',
                                        help='Promote a content view and all composites that contain it')
-parser_promote.add_argument('view_name', nargs='?')
+parser_promote.add_argument('baseviews', nargs='*')
 parser_promote.set_defaults(funcname='promote_chain')
 args = parser.parse_args()
 
@@ -77,5 +75,5 @@ else:
     password = config.get('main', 'password')
 
 passed_args = vars(args)
-passed_args['connection'] = 'bla' # TODO: build connection
+passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 mod = modules[args.funcname].main(**passed_args)
