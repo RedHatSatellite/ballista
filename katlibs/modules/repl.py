@@ -2,6 +2,7 @@ import cmd
 from pprint import pprint
 
 
+# noinspection PyPep8Naming,PyMethodMayBeStatic,PyUnusedLocal
 class Katloop(cmd.Cmd):
     def __init__(self, connection):
         cmd.Cmd.__init__(self)
