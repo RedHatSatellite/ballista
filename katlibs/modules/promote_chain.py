@@ -54,8 +54,8 @@ def update_and_publish_comp(connection, compview, version_dict):
     { <cv_id>: <version_id> }
     :param connection: The katello connection instance
     :type connection: KatelloConnection
-    :param compview: Id of the composite view to publish
-    :type compview: int
+    :param compview: Composite view dictionary to publish
+    :type compview: dict
     :param version_dict: Dictionary containing the versions that need to be linked ({cv_id: version_id})
     :type version_dict: dict
     """
