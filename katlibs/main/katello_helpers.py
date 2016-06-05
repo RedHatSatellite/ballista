@@ -18,14 +18,6 @@ import requests
 import json
 
 
-def to_dict(result_list):
-    ret_dict = dict()
-    for item in result_list:
-        ret_dict[item['name']] = item
-
-    return ret_dict
-
-
 class KatelloConnection(object):
     def __init__(self, base_url, username, password, verify, organization):
         self.organization = organization
