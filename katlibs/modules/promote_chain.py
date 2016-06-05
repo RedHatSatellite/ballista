@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright (c) 2016 Yoram Hekma <hekma.yoram@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,11 +14,17 @@
 #
 
 import time
-from katlibs.main.katello_helpers import get_components
+from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
 def get_running_publishes(tasklist):
-    # Returns a list of content view ids that are being published
+    """
+    Returns a list of content view ids that are being published
+    :type tasklist: dict
+    :param tasklist: List of tasks as returned from the api (foreman_tasks)
+    :returns: List of running tasks (list of dicts)
+    :rtype: list
+    """
     running_publishes = list()
     for task in tasklist:
         if task['state'] == 'running' and task['label'] == 'Actions::Katello::ContentView::Publish':
@@ -30,17 +34,31 @@ def get_running_publishes(tasklist):
 
 
 def get_latest_version_id(version_list):
+    """
+    :param version_list: List of version dictionaries as returned by api (versions property of a view)
+    :type version_list: list
+    :returns: The id of the latest version
+    :rtype: int
+    """
     highest_ver = sorted([float(v['version']) for v in version_list])[-1]
     try:
-        return get_components(version_list, ('version', unicode(highest_ver)))['id']
+        return int(get_components(version_list, ('version', unicode(highest_ver)))['id'])
     except KeyError:
         pass
 
 
 def update_and_publish_comp(connection, compview, version_dict):
-    # Update and publish the content view with the newest version of
-    # the cv's passed in version_dict which looks like
-    # { <cv_id>: <version_id> }
+    """
+    Update and publish the content view with the newest version of
+    the cv's passed in version_dict which looks like
+    { <cv_id>: <version_id> }
+    :param connection: The katello connection instance
+    :type connection: KatelloConnection
+    :param compview: Id of the composite view to publish
+    :type compview: int
+    :param version_dict: Dictionary containing the versions that need to be linked ({cv_id: version_id})
+    :type version_dict: dict
+    """
 
     version_list = list()
 
@@ -60,6 +78,13 @@ def update_and_publish_comp(connection, compview, version_dict):
 
 
 def recursive_update(connection, cvs):
+    """
+    :param connection: The katello connection instance
+    :type connection: KatelloConnection
+    :param cvs: list of content view names to update
+    :type cvs: list
+    :return:
+    """
     all_views = connection.content_views
     version_dict = dict()
     viewids_to_update = list()
@@ -100,4 +125,10 @@ def recursive_update(connection, cvs):
 
 # noinspection PyUnusedLocal
 def main(baseviews, connection, **kwargs):
+    """
+    :param baseviews: List of base content views to update
+    :type baseviews: list
+    :param connection: The katello connection instance
+    :type connection: KatelloConnection
+    """
     recursive_update(connection, baseviews)
