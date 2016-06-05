@@ -16,11 +16,15 @@
 #
 
 import logging
-from katlibs.main.katello_helpers import get_components
+from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
 # noinspection PyUnusedLocal
 def main(view_name, connection, **kwargs):
+    """
+    :type connection: KatelloConnection
+    :type view_name: str
+    """
     view_dict = get_components(connection.content_views, ('name', view_name))
     try:
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
