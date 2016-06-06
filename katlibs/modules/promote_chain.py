@@ -124,11 +124,11 @@ def recursive_update(connection, cvs):
 
 
 # noinspection PyUnusedLocal
-def main(baseviews, connection, **kwargs):
+def main(contentviews, connection, **kwargs):
     """
-    :param baseviews: List of base content views to update
-    :type baseviews: list
+    :param contentviews: List of content views to update
+    :type contentviews: list
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     """
-    recursive_update(connection, baseviews)
+    recursive_update(connection, contentviews)
