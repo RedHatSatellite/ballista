@@ -13,9 +13,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-import time
 import ConfigParser
-from katlibs.main.katello_helpers import get_components, KatelloConnection
+import time
+
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version_id
 
 
 def add_to_subparsers(subparsers):
@@ -44,20 +45,6 @@ def get_running_publishes(tasklist):
             running_publishes.append(task['input']['content_view']['id'])
 
     return running_publishes
-
-
-def get_latest_version_id(version_list):
-    """
-    :param version_list: List of version dictionaries as returned by api (versions property of a view)
-    :type version_list: list
-    :returns: The id of the latest version
-    :rtype: int
-    """
-    highest_ver = sorted([float(v['version']) for v in version_list])[-1]
-    try:
-        return int(get_components(version_list, ('version', unicode(highest_ver)))['id'])
-    except KeyError:
-        pass
 
 
 def update_and_publish_comp(connection, compview, version_dict):
