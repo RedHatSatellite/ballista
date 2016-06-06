@@ -14,6 +14,7 @@
 #
 
 import time
+import ConfigParser
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
@@ -145,7 +146,17 @@ def main(contentviews, connection, **kwargs):
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     """
+    if len(contentviews) == 1:
+        config = kwargs['config_obj']
+        try:
+            cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
+        except ConfigParser.NoSectionError:
+            cvs = contentviews
+
+    else:
+        cvs = contentviews
+
     try:
-        recursive_update(connection, contentviews)
+        recursive_update(connection, cvs)
     except NoComposites as error:
         print error
