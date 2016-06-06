@@ -162,6 +162,13 @@ class KatelloConnection(object):
             headers=self.post_headers,
         ).json()
 
+    def promote_view(self, v_id, data=None):
+        return self.session.post(
+            '%s/katello/api/content_view_versions/%s/promote' % (self.base_url, v_id),
+            data=json.dumps(data),
+            headers=self.post_headers,
+        ).json()
+
 
 def get_components(datalist, index):
     """
@@ -192,19 +199,24 @@ def get_components(datalist, index):
     return None
 
 
-def get_latest_version_id(version_list):
+def get_latest_version(version_list):
     """
     :param version_list: List of version dictionaries as returned by api (versions property of a view)
     :type version_list: list
     :returns: The id of the latest version
-    :rtype: int
+    :rtype: dict
     """
-    highest_ver = sorted([float(v['version']) for v in version_list])[-1]
     try:
-        return int(get_components(version_list, ('version', unicode(highest_ver)))['id'])
+        highest_ver = sorted([float(v['version']) for v in version_list])[-1]
+        return get_components(version_list, ('version', unicode(highest_ver)))
     except KeyError:
         pass
+    except IndexError:
+        return dict()
 
 
 class NoComposites(Exception):
+    pass
+
+class NoVersionError(Exception):
     pass

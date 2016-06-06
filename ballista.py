@@ -71,4 +71,9 @@ else:
 passed_args = vars(args)
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 passed_args['config_obj'] = config
-mod = modules[args.funcname].main(**passed_args)
+
+try:
+    mod = modules[args.funcname].main(**passed_args)
+except Exception:
+    pass
+

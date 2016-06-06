@@ -16,7 +16,7 @@
 import ConfigParser
 import time
 
-from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version_id, NoComposites
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoComposites
 
 
 def add_to_subparsers(subparsers):
@@ -108,7 +108,7 @@ def recursive_update(connection, cvs):
     # Get the ids of the new versions
     for cvid in viewids_to_update:
         versions = get_components(connection.content_views, ('id', cvid))['versions']
-        latest_version = get_latest_version_id(versions)
+        latest_version = int(get_latest_version(versions)['id'])
         version_dict[str(cvid)] = latest_version
 
     # Wait until all the cvs are updated
