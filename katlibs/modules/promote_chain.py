@@ -17,6 +17,10 @@ import time
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
+class NoComposites(Exception):
+    pass
+
+
 def get_running_publishes(tasklist):
     """
     Returns a list of content view ids that are being published
@@ -95,6 +99,9 @@ def recursive_update(connection, cvs):
         viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
                                                  c['content_view']['name'] in cvs]
 
+    if not viewids_to_update:
+        raise NoComposites('No composite views containing any of "{}"'.format(', '.join(cvs)))
+
     viewids_to_update = list(set(viewids_to_update))
 
     for cvid in viewids_to_update:
@@ -131,4 +138,7 @@ def main(contentviews, connection, **kwargs):
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     """
-    recursive_update(connection, contentviews)
+    try:
+        recursive_update(connection, contentviews)
+    except NoComposites as error:
+        print error
