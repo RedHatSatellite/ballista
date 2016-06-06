@@ -45,10 +45,10 @@ parser_cview.add_argument('view_name', nargs='?')
 parser_cview.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
 parser_cview.set_defaults(funcname='cleanout_view')
 
-parser_promote = subparsers.add_parser('promote_chain',
-                                       help='Promote a content view and all composites that contain it')
+parser_promote = subparsers.add_parser('publish_chain',
+                                       help='Publish a content view and all composites that contain it')
 parser_promote.add_argument('contentviews', nargs='+')
-parser_promote.set_defaults(funcname='promote_chain')
+parser_promote.set_defaults(funcname='publish_chain')
 args = parser.parse_args()
 
 config = ConfigParser()
