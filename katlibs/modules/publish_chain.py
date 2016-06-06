@@ -17,6 +17,13 @@ import time
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
+def add_to_subparsers(subparsers):
+    parser_publish_chain = subparsers.add_parser('publish_chain',
+                                                 help='Publish a content view and all composites that contain it')
+    parser_publish_chain.add_argument('contentviews', nargs='+')
+    parser_publish_chain.set_defaults(funcname='publish_chain')
+
+
 class NoComposites(Exception):
     pass
 

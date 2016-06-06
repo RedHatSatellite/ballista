@@ -19,6 +19,13 @@ import logging
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
+def add_to_subparsers(subparsers):
+    parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
+    parser_cleanout_view.add_argument('view_name', nargs='?')
+    parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
+    parser_cleanout_view.set_defaults(funcname='cleanout_view')
+
+
 # noinspection PyUnusedLocal
 def main(view_name, connection, **kwargs):
     """

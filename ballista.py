@@ -40,15 +40,9 @@ parser.add_argument('-p', help='Ask for password on the command line.', action='
                     default=False, dest='password')
 parser.add_argument('--organization', help='Name of the organization')
 
-parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
-parser_cleanout_view.add_argument('view_name', nargs='?')
-parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
-parser_cleanout_view.set_defaults(funcname='cleanout_view')
+for m in modules:
+    modules[m].add_to_subparsers(subparsers)
 
-parser_publish_chain = subparsers.add_parser('publish_chain',
-                                             help='Publish a content view and all composites that contain it')
-parser_publish_chain.add_argument('contentviews', nargs='+')
-parser_publish_chain.set_defaults(funcname='publish_chain')
 args = parser.parse_args()
 
 config = ConfigParser()
