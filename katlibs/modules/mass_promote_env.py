@@ -13,9 +13,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-import time
 import ConfigParser
-from katlibs.main.katello_helpers import get_components, KatelloConnection
+import time
+
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version_id
 
 def add_to_subparsers(subparsers):
     parser_promote_env = subparsers.add_parser('mass_promote_env',
@@ -41,20 +42,6 @@ def get_running_publishes(tasklist):
             running_publishes.append(task['input']['content_view']['id'])
 
     return running_publishes
-
-
-def get_latest_version_id(version_list):
-    """
-    :param version_list: List of version dictionaries as returned by api (versions property of a view)
-    :type version_list: list
-    :returns: The id of the latest version
-    :rtype: int
-    """
-    highest_ver = sorted([float(v['version']) for v in version_list])[-1]
-    try:
-        return int(get_components(version_list, ('version', unicode(highest_ver)))['id'])
-    except KeyError:
-        pass
 
 
 def update_and_publish_comp(connection, compview, version_dict):
@@ -132,7 +119,7 @@ def recursive_update(connection, cvs):
     for view in comps_to_update:
         update_and_publish_comp(connection, view, version_dict)
 
-def promote_env(connection, cvs):
+def mass_promote_env(connection, cvs, environment):
     """
     :param connection: The katello connection instance
     :type connection: KatelloConnection
@@ -140,13 +127,22 @@ def promote_env(connection, cvs):
     :type cvs: list
     :return:
     """
-    for view in cvs:
-        print view
+    all_views = connection.content_views
+    viewids_to_promote = list()
+
+    # Get ids of views
+    for view in all_views:
+        viewids_to_promote = viewids_to_promote + [c['content_view']['id'] for c in view['id'] if
+                                                 c['content_view']['name'] in cvs]
+    print viewids_to_promote
+    print environment
+    #for view in cvs:
+        #print view
         # get cv id
         # https://satellite62.example.com/katello/api/content_views/10/ <-- CV_test1
         # get_latest_version_id
         # check if environments['name'] matches the given environment
-        # 
+        # if not -> promote
 
 # noinspection PyUnusedLocal
 def main(contentviews, connection, **kwargs):
@@ -166,6 +162,6 @@ def main(contentviews, connection, **kwargs):
         cvs = contentviews
 
     try:
-        promote_env(connection, cvs)
+        mass_promote_env(connection, cvs, kwargs['environment'])
     except NoComposites as error:
         print error
