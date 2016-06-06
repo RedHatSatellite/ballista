@@ -204,3 +204,7 @@ def get_latest_version_id(version_list):
         return int(get_components(version_list, ('version', unicode(highest_ver)))['id'])
     except KeyError:
         pass
+
+
+class NoComposites(Exception):
+    pass

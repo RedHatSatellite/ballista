@@ -16,7 +16,7 @@
 import ConfigParser
 import time
 
-from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version_id
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version_id, NoComposites
 
 
 def add_to_subparsers(subparsers):
@@ -25,10 +25,6 @@ def add_to_subparsers(subparsers):
     parser_publish_chain.add_argument('contentviews', nargs='+',
                                       help='Specify either a ini file section or direct names of the contentview(s)')
     parser_publish_chain.set_defaults(funcname='publish_chain')
-
-
-class NoComposites(Exception):
-    pass
 
 
 def get_running_publishes(tasklist):
