@@ -19,6 +19,10 @@ import logging
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
+class ViewNotFoundError(Exception):
+    pass
+
+
 def add_to_subparsers(subparsers):
     parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
     parser_cleanout_view.add_argument('view_name', nargs='?')
@@ -37,8 +41,7 @@ def main(view_name, connection, **kwargs):
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
     except TypeError:
         logging.error('View %s not found!' % view_name)
-        raise
-        # TODO: generate proper raise
+        raise ViewNotFoundError('View {} not found'.format(view_name))
 
     for version_id in ids_to_remove:
         logging.info('Removing version_id %s' % version_id)
