@@ -16,6 +16,7 @@
 #
 
 import logging
+from ConfigParser import NoSectionError
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 
@@ -25,24 +26,32 @@ class ViewNotFoundError(Exception):
 
 def add_to_subparsers(subparsers):
     parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
-    parser_cleanout_view.add_argument('view_name', nargs='?')
+    parser_cleanout_view.add_argument('content_view', nargs='+')
     parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
     parser_cleanout_view.set_defaults(funcname='cleanout_view')
 
 
 # noinspection PyUnusedLocal
-def main(view_name, connection, **kwargs):
+def main(content_view, connection, **kwargs):
     """
     :type connection: KatelloConnection
-    :type view_name: str
+    :type content_view: list
     """
-    view_dict = get_components(connection.content_views, ('name', view_name))
-    try:
-        ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
-    except TypeError:
-        logging.error('View %s not found!' % view_name)
-        raise ViewNotFoundError('View {} not found'.format(view_name))
 
-    for version_id in ids_to_remove:
-        logging.info('Removing version_id %s' % version_id)
-        connection.remove_view_version(version_id)
+    try:
+        view_names = [c.strip() for c in kwargs['config_obj'].get(content_view[0], 'views').split(',')]
+    except NoSectionError:
+        view_names = content_view
+
+    for view_name in view_names:
+
+        view_dict = get_components(connection.content_views, ('name', view_name))
+        try:
+            ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
+        except TypeError:
+            logging.error('View %s not found!' % view_name)
+            raise ViewNotFoundError('View {} not found'.format(view_name))
+
+        for version_id in ids_to_remove:
+            logging.info('Removing version_id %s' % version_id)
+            connection.remove_view_version(version_id)
