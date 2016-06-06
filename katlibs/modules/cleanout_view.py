@@ -26,16 +26,19 @@ class ViewNotFoundError(Exception):
 
 def add_to_subparsers(subparsers):
     parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
-    parser_cleanout_view.add_argument('content_view', nargs='+')
+    parser_cleanout_view.add_argument('content_view', nargs='*')
+    parser_cleanout_view.add_argument('-a', '--all', action='store_true', default=False,
+                                      help='Clean all content views', dest='all_views')
     parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions',
                                       default=0, type=int)
     parser_cleanout_view.set_defaults(funcname='cleanout_view')
 
 
 # noinspection PyUnusedLocal
-def main(content_view, connection, keep=0, **kwargs):
+def main(content_view, connection, all_views=False, keep=0, **kwargs):
     """
-    :param keep: int or bool
+    :type keep: int or bool
+    :type all_views: bool
     :type connection: KatelloConnection
     :type content_view: list
     """
@@ -43,10 +46,13 @@ def main(content_view, connection, keep=0, **kwargs):
     if not keep:
         keep = None
 
-    try:
-        view_names = [c.strip() for c in kwargs['config_obj'].get(content_view[0], 'views').split(',')]
-    except NoSectionError:
-        view_names = content_view
+    if all_views:
+        view_names = [view['name'] for view in connection.content_views]
+    else:
+        try:
+            view_names = [c.strip() for c in kwargs['config_obj'].get(content_view[0], 'views').split(',')]
+        except NoSectionError:
+            view_names = content_view
 
     for view_name in view_names:
         try:
