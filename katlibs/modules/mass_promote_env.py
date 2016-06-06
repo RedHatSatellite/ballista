@@ -14,6 +14,7 @@
 #
 
 import time
+import ConfigParser
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
 def add_to_subparsers(subparsers):
@@ -21,6 +22,8 @@ def add_to_subparsers(subparsers):
                                     help='Mass promote a environment to all given contentviews')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
+    parser_promote_env.add_argument('-e', '--environment', required=True,
+                                    help='Environment to promote to.')
     parser_promote_env.set_defaults(funcname='mass_promote_env')
 
 
@@ -129,6 +132,21 @@ def recursive_update(connection, cvs):
     for view in comps_to_update:
         update_and_publish_comp(connection, view, version_dict)
 
+def promote_env(connection, cvs):
+    """
+    :param connection: The katello connection instance
+    :type connection: KatelloConnection
+    :param cvs: list of content view names to update
+    :type cvs: list
+    :return:
+    """
+    for view in cvs:
+        print view
+        # get cv id
+        # https://satellite62.example.com/katello/api/content_views/10/ <-- CV_test1
+        # get_latest_version_id
+        # check if environments['name'] matches the given environment
+        # 
 
 # noinspection PyUnusedLocal
 def main(contentviews, connection, **kwargs):
@@ -148,6 +166,6 @@ def main(contentviews, connection, **kwargs):
         cvs = contentviews
 
     try:
-        recursive_update(connection, cvs)
+        promote_env(connection, cvs)
     except NoComposites as error:
         print error
