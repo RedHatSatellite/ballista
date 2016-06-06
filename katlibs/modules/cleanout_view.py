@@ -27,16 +27,21 @@ class ViewNotFoundError(Exception):
 def add_to_subparsers(subparsers):
     parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
     parser_cleanout_view.add_argument('content_view', nargs='+')
-    parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
+    parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions',
+                                      default=0, type=int)
     parser_cleanout_view.set_defaults(funcname='cleanout_view')
 
 
 # noinspection PyUnusedLocal
-def main(content_view, connection, **kwargs):
+def main(content_view, connection, keep=0, **kwargs):
     """
+    :param keep: int or bool
     :type connection: KatelloConnection
     :type content_view: list
     """
+
+    if not keep:
+        keep = None
 
     try:
         view_names = [c.strip() for c in kwargs['config_obj'].get(content_view[0], 'views').split(',')]
@@ -44,13 +49,18 @@ def main(content_view, connection, **kwargs):
         view_names = content_view
 
     for view_name in view_names:
-
-        view_dict = get_components(connection.content_views, ('name', view_name))
         try:
-            ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
+            view_dict = get_components(connection.content_views, ('name', view_name))
         except TypeError:
             logging.error('View %s not found!' % view_name)
             raise ViewNotFoundError('View {} not found'.format(view_name))
+
+        ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
+
+        try:
+            ids_to_remove = sorted(ids_to_remove)[:-keep]
+        except TypeError:
+            pass
 
         for version_id in ids_to_remove:
             logging.info('Removing version_id %s' % version_id)
