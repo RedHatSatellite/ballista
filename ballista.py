@@ -50,11 +50,10 @@ parser_promote_env = subparsers.add_parser('mass_promote_env',
 parser_promote_env.add_argument('contentviews', nargs='+')
 parser_promote_env.set_defaults(funcname='mass_promote_env')
 
-parser_promote = subparsers.add_parser('publish_chain',
-                                       help='Publish a content view and all composites that contain it')
-parser_promote.add_argument('contentviews', nargs='+')
-parser_promote.set_defaults(funcname='publish_chain')
-
+parser_publish_chain = subparsers.add_parser('publish_chain',
+                                             help='Publish a content view and all composites that contain it')
+parser_publish_chain.add_argument('contentviews', nargs='+')
+parser_publish_chain.set_defaults(funcname='publish_chain')
 args = parser.parse_args()
 
 config = ConfigParser()
