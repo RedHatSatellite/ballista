@@ -40,20 +40,9 @@ parser.add_argument('-p', help='Ask for password on the command line.', action='
                     default=False, dest='password')
 parser.add_argument('--organization', help='Name of the organization')
 
-parser_cview = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
-parser_cview.add_argument('view_name', nargs='?')
-parser_cview.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
-parser_cview.set_defaults(funcname='cleanout_view')
+for m in modules:
+    modules[m].add_to_subparsers(subparsers)
 
-parser_promote_env = subparsers.add_parser('mass_promote_env',
-                                       help='Mass promote a environment to all given contentviews')
-parser_promote_env.add_argument('contentviews', nargs='+')
-parser_promote_env.set_defaults(funcname='mass_promote_env')
-
-parser_publish_chain = subparsers.add_parser('publish_chain',
-                                             help='Publish a content view and all composites that contain it')
-parser_publish_chain.add_argument('contentviews', nargs='+')
-parser_publish_chain.set_defaults(funcname='publish_chain')
 args = parser.parse_args()
 
 config = ConfigParser()
@@ -81,4 +70,5 @@ else:
 
 passed_args = vars(args)
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+passed_args['config_obj'] = config
 mod = modules[args.funcname].main(**passed_args)

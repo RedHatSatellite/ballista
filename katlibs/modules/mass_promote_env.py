@@ -16,6 +16,12 @@
 import time
 from katlibs.main.katello_helpers import get_components, KatelloConnection
 
+def add_to_subparsers(subparsers):
+    parser_promote_env = subparsers.add_parser('mass_promote_env',
+                                       help='Mass promote a environment to all given contentviews')
+    parser_promote_env.add_argument('contentviews', nargs='+')
+    parser_promote_env.set_defaults(funcname='mass_promote_env')
+
 
 def get_running_publishes(tasklist):
     """

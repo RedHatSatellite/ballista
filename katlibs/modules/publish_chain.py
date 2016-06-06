@@ -14,7 +14,15 @@
 #
 
 import time
+import ConfigParser
 from katlibs.main.katello_helpers import get_components, KatelloConnection
+
+
+def add_to_subparsers(subparsers):
+    parser_publish_chain = subparsers.add_parser('publish_chain',
+                                                 help='Publish a content view and all composites that contain it')
+    parser_publish_chain.add_argument('contentviews', nargs='+')
+    parser_publish_chain.set_defaults(funcname='publish_chain')
 
 
 class NoComposites(Exception):
@@ -138,7 +146,17 @@ def main(contentviews, connection, **kwargs):
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     """
+    if len(contentviews) == 1:
+        config = kwargs['config_obj']
+        try:
+            cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
+        except ConfigParser.NoSectionError:
+            cvs = contentviews
+
+    else:
+        cvs = contentviews
+
     try:
-        recursive_update(connection, contentviews)
+        recursive_update(connection, cvs)
     except NoComposites as error:
         print error
