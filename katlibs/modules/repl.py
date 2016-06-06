@@ -2,6 +2,11 @@ import cmd
 from pprint import pprint
 
 
+def add_to_subparsers(subparsers):
+    parser_cleanout_view = subparsers.add_parser('repl', help='Start repl-shell')
+    parser_cleanout_view.set_defaults(funcname='repl')
+
+
 # noinspection PyPep8Naming,PyMethodMayBeStatic,PyUnusedLocal
 class Katloop(cmd.Cmd):
     def __init__(self, connection):

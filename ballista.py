@@ -40,21 +40,8 @@ parser.add_argument('-p', help='Ask for password on the command line.', action='
                     default=False, dest='password')
 parser.add_argument('--organization', help='Name of the organization')
 
-# cleanout_view
-parser_cview = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
-parser_cview.add_argument('view_name', nargs='?')
-parser_cview.add_argument('-k', '--keep', help='Keep this many of the newest unused versions', default=0)
-parser_cview.set_defaults(funcname='cleanout_view')
-
-# promote_chain
-parser_promote = subparsers.add_parser('promote_chain',
-                                       help='Promote a content view and all composites that contain it')
-parser_promote.add_argument('baseviews', nargs='*')
-parser_promote.set_defaults(funcname='promote_chain')
-
-# repl
-parser_repl = subparsers.add_parser('repl', help='Start repl-shell')
-parser_repl.set_defaults(funcname='repl')
+for m in modules:
+    modules[m].add_to_subparsers(subparsers)
 
 args = parser.parse_args()
 
@@ -83,4 +70,5 @@ else:
 
 passed_args = vars(args)
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+passed_args['config_obj'] = config
 mod = modules[args.funcname].main(**passed_args)
