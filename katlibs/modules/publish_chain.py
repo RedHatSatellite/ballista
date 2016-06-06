@@ -21,7 +21,8 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection
 def add_to_subparsers(subparsers):
     parser_publish_chain = subparsers.add_parser('publish_chain',
                                                  help='Publish a content view and all composites that contain it')
-    parser_publish_chain.add_argument('contentviews', nargs='+')
+    parser_publish_chain.add_argument('contentviews', nargs='+',
+                                      help='Specify either a ini file section or direct names of the contentview(s)')
     parser_publish_chain.set_defaults(funcname='publish_chain')
 
 
@@ -152,7 +153,6 @@ def main(contentviews, connection, **kwargs):
             cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
         except ConfigParser.NoSectionError:
             cvs = contentviews
-
     else:
         cvs = contentviews
 
