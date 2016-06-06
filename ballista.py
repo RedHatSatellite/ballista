@@ -74,6 +74,6 @@ passed_args['config_obj'] = config
 
 try:
     mod = modules[args.funcname].main(**passed_args)
-except Exception:
-    pass
+except Exception as error:
+    print error
 

@@ -143,8 +143,7 @@ def mass_promote_env(connection, cvs, environment):
         try:
             version_id = latest_version['id']
         except KeyError:
-            print "no published versions found!"
-            raise
+            raise NoVersionError("no published versions found!")
 
         envid = get_components(connection.environments, ('name', environment))['id']
         if envid not in latest_version['environment_ids']:
@@ -169,7 +168,4 @@ def main(contentviews, connection, **kwargs):
     else:
         cvs = contentviews
 
-    try:
-        mass_promote_env(connection, cvs, kwargs['environment'])
-    except NoComposites as error:
-        print error
+    mass_promote_env(connection, cvs, kwargs['environment'])
