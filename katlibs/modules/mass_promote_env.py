@@ -29,98 +29,6 @@ def add_to_subparsers(subparsers):
     parser_promote_env.set_defaults(funcname='mass_promote_env')
 
 
-def get_running_publishes(tasklist):
-    """
-    Returns a list of content view ids that are being published
-    :type tasklist: dict
-    :param tasklist: List of tasks as returned from the api (foreman_tasks)
-    :returns: List of running tasks (list of dicts)
-    :rtype: list
-    """
-    running_publishes = list()
-    for task in tasklist:
-        if task['state'] == 'running' and task['label'] == 'Actions::Katello::ContentView::Publish':
-            running_publishes.append(task['input']['content_view']['id'])
-
-    return running_publishes
-
-
-def update_and_publish_comp(connection, compview, version_dict):
-    """
-    Update and publish the content view with the newest version of
-    the cv's passed in version_dict which looks like
-    { <cv_id>: <version_id> }
-    :param connection: The katello connection instance
-    :type connection: KatelloConnection
-    :param compview: Composite view dictionary to publish
-    :type compview: dict
-    :param version_dict: Dictionary containing the versions that need to be linked ({cv_id: version_id})
-    :type version_dict: dict
-    """
-
-    version_list = list()
-
-    for component in compview['components']:
-        cv_id = component['content_view_id']
-        try:
-            version_list.append(version_dict[str(cv_id)])
-        except KeyError:
-            version_list.append(component['id'])
-
-    connection.update_view(compview['id'], {
-        'id': compview['id'],
-        'component_ids': version_list,
-    })
-
-    connection.publish_view(compview['id'])
-
-
-def recursive_update(connection, cvs):
-    """
-    :param connection: The katello connection instance
-    :type connection: KatelloConnection
-    :param cvs: list of content view names to update
-    :type cvs: list
-    :return:
-    """
-    all_views = connection.content_views
-    version_dict = dict()
-    viewids_to_update = list()
-    comps_to_update = list()
-
-    # Get ids of views
-    for view in all_views:
-        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
-                                                 c['content_view']['name'] in cvs]
-
-    viewids_to_update = list(set(viewids_to_update))
-
-    for cvid in viewids_to_update:
-        connection.publish_view(cvid, {'id': cvid})
-
-    # Find which composites are impacted
-    for view in all_views:
-        if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
-                viewids_to_update):
-            comps_to_update.append(view)
-
-    # Get the ids of the new versions
-    for cvid in viewids_to_update:
-        versions = get_components(connection.content_views, ('id', cvid))['versions']
-        latest_version = get_latest_version(versions)
-        version_dict[str(cvid)] = latest_version
-
-    # Wait until all the cvs are updated
-    while True:
-        if set(get_running_publishes(connection.foreman_tasks)).intersection(viewids_to_update):
-            time.sleep(10)
-        else:
-            break
-
-    for view in comps_to_update:
-        update_and_publish_comp(connection, view, version_dict)
-
-
 def mass_promote_env(connection, cvs, environment):
     """
     :param connection: The katello connection instance
@@ -130,15 +38,14 @@ def mass_promote_env(connection, cvs, environment):
     :type environment: str
     """
     all_views = connection.content_views
-    viewids_to_promote = list()
+    views_to_promote = dict()
 
     # Get the ids of the views
     for view in all_views:
         if view['name'] in cvs:
-            viewids_to_promote.append(view['id'])
+            views_to_promote[view['name']] = view['id']
 
-    # Get the ids of the latest versions
-    for cvid in viewids_to_promote:
+    for cvname,cvid in views_to_promote.iteritems():
         versions = get_components(connection.content_views, ('id', cvid))['versions']
         latest_version = get_latest_version(versions)
 
@@ -149,8 +56,8 @@ def mass_promote_env(connection, cvs, environment):
 
         envid = get_components(connection.environments, ('name', environment))['id']
         if envid not in latest_version['environment_ids']:
-            print "promoting envid {}".format(envid)
-            connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
+            print "promoting {}".format(cvname) + " to environment {}".format(environment)
+            #connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
 
 
 # noinspection PyUnusedLocal
