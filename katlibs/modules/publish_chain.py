@@ -1,4 +1,4 @@
-# Copyright (c) 2016 Yoram Hekma <hekma.yoram@gmail.com>
+# Copyright (c) 2016 the Ballista Project https://gitlab.com/parapet/ballista
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
