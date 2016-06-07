@@ -57,7 +57,7 @@ def mass_promote_env(connection, cvs, environment):
         envid = get_components(connection.environments, ('name', environment))['id']
         if envid not in latest_version['environment_ids']:
             print "promoting {}".format(cvname) + " to environment {}".format(environment)
-            #connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
+            connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
 
 
 # noinspection PyUnusedLocal
