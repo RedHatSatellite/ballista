@@ -17,11 +17,8 @@
 
 import logging
 from ConfigParser import NoSectionError
-from katlibs.main.katello_helpers import get_components, KatelloConnection
 
-
-class ViewNotFoundError(Exception):
-    pass
+from katlibs.main.katello_helpers import get_components, KatelloConnection, ViewNotFoundError
 
 
 def add_to_subparsers(subparsers):

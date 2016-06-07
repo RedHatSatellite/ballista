@@ -241,3 +241,7 @@ class NoComposites(Exception):
 
 class NoVersionError(Exception):
     pass
+
+
+class ViewNotFoundError(Exception):
+    pass
