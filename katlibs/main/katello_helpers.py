@@ -238,5 +238,6 @@ def get_latest_version(version_list):
 class NoComposites(Exception):
     pass
 
+
 class NoVersionError(Exception):
     pass

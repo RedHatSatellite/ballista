@@ -16,11 +16,12 @@
 import ConfigParser
 import time
 
-from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoComposites, NoVersionError
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoVersionError
+
 
 def add_to_subparsers(subparsers):
     parser_promote_env = subparsers.add_parser('mass_promote_env',
-                                    help='Mass promote a environment to all given contentviews')
+                                               help='Mass promote a environment to all given contentviews')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
     parser_promote_env.add_argument('-e', '--environment', required=True,
@@ -118,6 +119,7 @@ def recursive_update(connection, cvs):
 
     for view in comps_to_update:
         update_and_publish_comp(connection, view, version_dict)
+
 
 def mass_promote_env(connection, cvs, environment):
     """
