@@ -147,20 +147,21 @@ def mass_promote_env(connection, cvs, environment):
 
         envid = get_components(connection.environments, ('name', environment))['id']
         if envid not in latest_version['environment_ids']:
-            print "promoting {}".format(envid)
-            connection.promote_view(version_id, {'id': version_id, 'environment_id': envid})
+            print "promoting envid {}".format(envid)
+            connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, **kwargs):
+def main(contentviews, connection, config_obj, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
     :param connection: The katello connection instance
     :type connection: KatelloConnection
+    :type config_obj: The ini entries
     """
     if len(contentviews) == 1:
-        config = kwargs['config_obj']
+        config = config_obj
         try:
             cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
         except ConfigParser.NoSectionError:
