@@ -15,12 +15,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+import argparse
+import sys
+import logging
 from ConfigParser import ConfigParser
 from getpass import getpass
-import sys
 from katlibs import modules
 from katlibs.main.katello_helpers import KatelloConnection
-import argparse
 
 try:
     if sys.argv[1] == '--list':
@@ -32,6 +33,7 @@ except IndexError:
 parser = argparse.ArgumentParser(prog='ballista.py')
 subparsers = parser.add_subparsers(help='sub-command help')
 parser.add_argument('--list', help='List available actions.', action='store_true')
+parser.add_argument('-v', '--verbose', action='store_true')
 parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config',
                     default='/etc/ballista/config.ini')
 parser.add_argument('--url', help='Url to connect to (for example https://satellite6.example.com).')
@@ -47,6 +49,9 @@ args = parser.parse_args()
 
 config = ConfigParser()
 config.read(args.conf_file)
+
+if args.verbose:
+    logging.basicConfig(level=logging.DEBUG)
 
 if not args.url:
     url = config.get('main', 'url')
@@ -73,7 +78,15 @@ passed_args['connection'] = KatelloConnection(url, username, password, verify=Fa
 passed_args['config_obj'] = config
 
 try:
-    mod = modules[args.funcname].main(**passed_args)
+    mod = modules[args.funcname]
+    logging.debug(
+        'verbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
+            verbose=args.verbose,
+            url=url,
+            user=username,
+            org=organization,
+            modname=mod.__name__,
+        ))
+    mod.main(**passed_args)
 except Exception as error:
     print error
-
