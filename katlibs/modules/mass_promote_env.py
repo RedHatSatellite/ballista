@@ -15,6 +15,7 @@
 
 import ConfigParser
 import time
+import logging
 
 from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoVersionError
 
@@ -56,7 +57,10 @@ def mass_promote_env(connection, cvs, environment):
 
         envid = get_components(connection.environments, ('name', environment))['id']
         if envid not in latest_version['environment_ids']:
-            print "promoting {}".format(cvname) + " to environment {}".format(environment)
+            logging.info('promoting {cvname} to environment {environment}'.format(
+            cvname=cvname,
+            environment=environment
+            ))
             connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
 
 

@@ -52,6 +52,8 @@ config.read(args.conf_file)
 
 if args.verbose:
     logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 
 if not args.url:
     url = config.get('main', 'url')
