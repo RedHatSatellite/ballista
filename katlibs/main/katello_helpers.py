@@ -143,6 +143,14 @@ class KatelloConnection(object):
         return self._get_katello_dict('host_collections/%s/systems' % col_id, clean=True)
 
     def publish_view(self, c_id, data=None):
+        """
+        :param c_id: content view id
+        :type c_id: int or str
+        :param data: Additional post data
+        :type data: dict
+        :return: json output of the api query
+        :rtype: dict
+        """
         return self.session.post(
             '%s/katello/api/content_views/%s/publish' % (self.base_url, c_id),
             data=json.dumps(data),
@@ -150,6 +158,13 @@ class KatelloConnection(object):
         ).json()
 
     def update_view(self, c_id, data=None):
+        """
+        :param c_id: content view id
+        :type c_id: int or str
+        :param data: Additional post data
+        :type data: dict
+        :return: json output of the api query
+        """
         return self.session.put(
             '%s/katello/api/content_views/%s' % (self.base_url, c_id),
             data=json.dumps(data),
@@ -157,6 +172,11 @@ class KatelloConnection(object):
         ).json()
 
     def remove_view_version(self, v_id):
+        """
+        :param v_id: content view id
+        :type v_id: int or str
+        :return: json output of the api query
+        """
         return self.session.delete(
             '%s/katello/api/content_view_versions/%s' % (self.base_url, v_id),
             headers=self.post_headers,
