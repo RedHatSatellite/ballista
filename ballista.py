@@ -47,7 +47,6 @@ for m in modules:
     modules[m].add_to_subparsers(subparsers)
 
 args = parser.parse_args()
-passed_args = filter(lambda key: vars(args)[key], vars(args))
 passed_args = {k: v for k, v in vars(args).iteritems() if v}
 config = ConfigParser()
 config.read(args.conf_file)
