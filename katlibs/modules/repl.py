@@ -16,6 +16,9 @@
 import cmd
 from katlibs.main.katello_helpers import get_components
 from pprint import pprint
+import logging
+
+logging.basicConfig(level=logging.WARNING)
 
 
 def add_to_subparsers(subparsers):
