@@ -1,20 +1,20 @@
 # Ballista
 
-Ballista is Katello/Red Hat Satellite 6 command-line tool which makes some admin tasks easier (and faster). It originated as an extension of the hammer-cli to do things that are not implemented in hammer. It's designed to be modular as all actions are separated module files. It has a hammer like syntax and is also fully configurable with only an ini configuration file.
+Ballista is Katello/Red Hat Satellite 6 command-line tool which makes some admin tasks easier (and faster). Its original goal is to act as a supplement to the hammer-cli, providing functionality that hammer does not. Because of its modular design all subcommand logic is contained in seperate modules, so it is easy to extend its functionality. It has a hammer-like syntax and can optionally use a standard configuration file for default parameters such as Katello/Satellite6 url and organization.
 
 ## Current features/modules
 
 ### Chain publishing of Content Views
 
-With Ballista it's possible in a single step to publish a new version of one or more Content View(s) and automatically attach them to the related Composite Content Views. When the new version is published the Composite Content Views will also be published to a new version.
+With Ballista it's possible to publish a new version of one or more Content Views and automatically attach them to the related Composite Content Views with a single command. When the new version is published the Composite Content Views that contain the newly published Content View will also be published to a new version. Note that this new version is not yet promoted, so you still have control over your normal patch and lifecycle management.
 
 ### Mass promote Content Views to a Lifecycle environment
 
-When the chain publishing is done and you want to make the new versions visible to a Lifecycle environment (for example in a new patch period) you can use Ballista to promote multiple Content Views to a Lifecycle environment with one single command.
+Using a single command you can promote the newest version of multiple Content Views to a Lifecycle Environment. This is especially useful when combined with the chain-publishing feature, as you can first update your baseviews and then mass-promote the resulting versions of the Composite Content Views when you actually want to have the content available to your hosts in that environment (ie. when you want to patch).
 
 ### Cleanout Content View versions
 
-Every version of a Content View stays in your system and won't be cleaned automatically. With Ballista you can cleanout (all) your Content Views with one single command and optional keep a set of previous versions.
+In order to be able to roll back to a previous version of a Content View, previous versions are never removed by Katello/Satellite6. Removing old and obsolete versions can be a time consuming manual (and thus error-prone) operation. With Ballista you can remove all unused versions of a Content View, optionally supplying a number of recent versions to keep. If you have a lot of content views, you can also clean all of them in one go.
 
 ## Usage
 
