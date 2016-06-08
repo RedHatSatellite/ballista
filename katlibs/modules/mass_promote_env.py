@@ -15,7 +15,6 @@
 
 import ConfigParser
 import logging
-
 from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoVersionError
 
 
