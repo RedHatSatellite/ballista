@@ -18,10 +18,11 @@
 import argparse
 import sys
 import logging
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoSectionError
 from getpass import getpass
 from katlibs import modules
 from katlibs.main.katello_helpers import KatelloConnection
+
 
 try:
     if sys.argv[1] == '--list':
@@ -32,21 +33,22 @@ except IndexError:
 
 parser = argparse.ArgumentParser(prog='ballista.py')
 subparsers = parser.add_subparsers(help='sub-command help')
-parser.add_argument('--list', help='List available actions.', action='store_true')
-parser.add_argument('-v', '--verbose', action='store_true')
+parser.add_argument('--list', help='List available actions.', action='store_true', default=False)
+parser.add_argument('-v', '--verbose', action='store_true', default=False)
 parser.add_argument('-c', '--conf_file', help='path to the file with the Satellite 6 config',
                     default='/etc/ballista/config.ini')
-parser.add_argument('--url', help='Url to connect to (for example https://satellite6.example.com).')
-parser.add_argument('-u', '--username')
+parser.add_argument('--url', help='Url to connect to (for example https://satellite6.example.com).', default=None)
+parser.add_argument('-u', '--username', default=None)
 parser.add_argument('-p', help='Ask for password on the command line.', action='store_true',
                     default=False, dest='password')
-parser.add_argument('--organization', help='Name of the organization')
+parser.add_argument('--organization', help='Name of the organization', default=None)
 
 for m in modules:
     modules[m].add_to_subparsers(subparsers)
 
 args = parser.parse_args()
-
+passed_args = filter(lambda key: vars(args)[key], vars(args))
+passed_args = {k: v for k, v in vars(args).iteritems() if v}
 config = ConfigParser()
 config.read(args.conf_file)
 
@@ -55,27 +57,29 @@ if args.verbose:
 else:
     logging.basicConfig(level=logging.INFO)
 
-if not args.url:
-    url = config.get('main', 'url')
-else:
-    url = args.url
+try:
+    url = passed_args.get('url', config.get('main', 'url'))
+except NoSectionError:
+    print "No url specified, and none found in {}".format(args.conf_file)
+    sys.exit(1)
 
-if not args.username:
-    username = config.get('main', 'username')
-else:
-    username = args.username
+try:
+    username = passed_args.get('username', config.get('main', 'username'))
+except NoSectionError:
+    print "No username specified, and none found in {}".format(args.conf_file)
+    sys.exit(1)
 
-if not args.organization:
-    organization = config.get('main', 'organization')
-else:
-    organization = args.organization
+try:
+    organization = passed_args.get('organization', config.get('main', 'organization'))
+except NoSectionError:
+    print "No organization specified, and none found in {}".format(args.conf_file)
+    sys.exit(1)
 
 if args.password:
     password = getpass('Password: ')
 else:
     password = config.get('main', 'password')
 
-passed_args = vars(args)
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 passed_args['config_obj'] = config
 
