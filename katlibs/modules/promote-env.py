@@ -21,10 +21,9 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection, get_
 def add_to_subparsers(subparsers):
     parser_promote_env = subparsers.add_parser('promote-env',
                                                help='Mass promote a environment to all given contentviews')
+    parser_promote_env.add_argument('environment', nargs='?', help='Environment to promote to.')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_promote_env.add_argument('-e', '--environment', required=True,
-                                    help='Environment to promote to.')
     parser_promote_env.set_defaults(funcname='promote-env')
 
 
@@ -63,13 +62,15 @@ def mass_promote_env(connection, cvs, environment):
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, config_obj, **kwargs):
+def main(contentviews, connection, config_obj, environment, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
     :param connection: The katello connection instance
     :type connection: KatelloConnection
-    :type config_obj: The ini entries
+    :param config_obj: The ini entries
+    :type config_obj: ConfigParser.ConfigParser
+    :type environment: str
     """
     if len(contentviews) == 1:
         config = config_obj
@@ -80,4 +81,4 @@ def main(contentviews, connection, config_obj, **kwargs):
     else:
         cvs = contentviews
 
-    mass_promote_env(connection, cvs, kwargs['environment'])
+    mass_promote_env(connection, cvs, environment)
