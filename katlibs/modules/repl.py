@@ -48,9 +48,14 @@ class Katloop(cmd.Cmd):
         print "Print content views"
 
     def do_list_versions(self, cview_name):
-        for version in get_components(self.connection.content_views, ('name', cview_name))['versions']:
-            print "Version_id:{:>25}".format(version['version'])
-            print "Date published:{:>25}".format(version['published'])
+        try:
+            versions = get_components(self.connection.content_views, ('name', cview_name))['versions']
+        except KeyError:
+            print "View not found"
+            return False
+        for version in versions:
+            print "Version_id: {}".format(version['version'])
+            print "Date published: {}".format(version['published'])
             print "-" * 40
 
     def help_list_versions(self):
