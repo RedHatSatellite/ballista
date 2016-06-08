@@ -19,13 +19,13 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection, get_
 
 
 def add_to_subparsers(subparsers):
-    parser_promote_env = subparsers.add_parser('mass_promote_env',
+    parser_promote_env = subparsers.add_parser('promote-env',
                                                help='Mass promote a environment to all given contentviews')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
     parser_promote_env.add_argument('-e', '--environment', required=True,
                                     help='Environment to promote to.')
-    parser_promote_env.set_defaults(funcname='mass_promote_env')
+    parser_promote_env.set_defaults(funcname='promote-env')
 
 
 def mass_promote_env(connection, cvs, environment):

@@ -20,13 +20,13 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection, View
 
 
 def add_to_subparsers(subparsers):
-    parser_cleanout_view = subparsers.add_parser('cleanout_view', help='Cleanup of content view versions')
+    parser_cleanout_view = subparsers.add_parser('cleanout-view', help='Cleanup of content view versions')
     parser_cleanout_view.add_argument('content_view', nargs='*')
     parser_cleanout_view.add_argument('-a', '--all', action='store_true', default=False,
                                       help='Clean all content views', dest='all_views')
     parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions',
                                       default=0, type=int)
-    parser_cleanout_view.set_defaults(funcname='cleanout_view')
+    parser_cleanout_view.set_defaults(funcname='cleanout-view')
 
 
 # noinspection PyUnusedLocal

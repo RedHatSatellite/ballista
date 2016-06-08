@@ -20,11 +20,11 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection, get_
 
 
 def add_to_subparsers(subparsers):
-    parser_publish_chain = subparsers.add_parser('publish_chain',
+    parser_publish_chain = subparsers.add_parser('chain-publish',
                                                  help='Publish a content view and all composites that contain it')
     parser_publish_chain.add_argument('contentviews', nargs='+',
                                       help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_publish_chain.set_defaults(funcname='publish_chain')
+    parser_publish_chain.set_defaults(funcname='chain-publish')
 
 
 def get_running_publishes(tasklist):
