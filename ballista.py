@@ -79,16 +79,13 @@ passed_args = vars(args)
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 passed_args['config_obj'] = config
 
-try:
-    mod = modules[args.funcname]
-    logging.debug(
-        'verbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
-            verbose=args.verbose,
-            url=url,
-            user=username,
-            org=organization,
-            modname=mod.__name__,
-        ))
-    mod.main(**passed_args)
-except Exception as error:
-    print error
+mod = modules[args.funcname]
+logging.debug(
+    'verbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
+        verbose=args.verbose,
+        url=url,
+        user=username,
+        org=organization,
+        modname=mod.__name__,
+    ))
+mod.main(**passed_args)
