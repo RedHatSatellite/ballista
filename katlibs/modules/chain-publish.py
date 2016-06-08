@@ -15,7 +15,6 @@
 
 import ConfigParser
 import time
-
 from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoComposites
 
 

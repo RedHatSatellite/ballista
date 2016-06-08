@@ -16,6 +16,7 @@
 
 import requests
 import json
+import sys
 
 
 class KatelloConnection(object):
@@ -236,12 +237,18 @@ def get_latest_version(version_list):
 
 
 class NoComposites(Exception):
-    pass
+    def __init__(self, message):
+        print message
+        sys.exit(1)
 
 
 class NoVersionError(Exception):
-    pass
+    def __init__(self, message):
+        print message
+        sys.exit(1)
 
 
 class ViewNotFoundError(Exception):
-    pass
+    def __init__(self, message):
+        print message
+        sys.exit(1)
