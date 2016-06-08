@@ -203,7 +203,7 @@ def get_components(datalist, index):
     :param index: Tuple to search for. Index0 is the key, Index1 the value
     :type index: tuple
     :return: The dictionary that matches when found, else None
-    :rtype: None or dict
+    :rtype: dict
     """
 
     search_key = index[0]
@@ -216,7 +216,7 @@ def get_components(datalist, index):
         except KeyError:
             pass
 
-    return None
+    return dict()
 
 
 def get_latest_version(version_list):
