@@ -1,6 +1,6 @@
 # Ballista
 
-Ballista is Katello/Red Hat Satellite 6 command-line tool which makes some admin tasks easier (and faster). Its original goal is to act as a supplement to the hammer-cli, providing functionality that hammer does not. Because of its modular design all subcommand logic is contained in seperate modules, so it is easy to extend its functionality. It has a hammer-like syntax and can optionally use a standard configuration file for default parameters such as Katello/Satellite6 url and organization.
+Ballista is a Katello/Red Hat Satellite 6 command-line tool which makes some admin tasks easier (and faster). Its original goal is to act as a supplement to the hammer-cli, providing functionality that hammer does not. Because of its modular design all subcommand logic is contained in seperate modules, so it is easy to extend its functionality. It has a hammer-like syntax and can optionally use a standard configuration file for default parameters such as Katello/Satellite6 url and organization.
 
 ## Current features/modules
 
