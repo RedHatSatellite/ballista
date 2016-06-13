@@ -24,7 +24,7 @@ def add_to_subparsers(subparsers):
     parser_promote_env.add_argument('environment', nargs='?', help='Environment to promote to.')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_promote_env.set_defaults(funcname='promote-env')
+    parser_promote_env.set_defaults(funcname='promote_env')
 
 
 def mass_promote_env(connection, cvs, environment):

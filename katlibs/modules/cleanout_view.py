@@ -25,7 +25,7 @@ def add_to_subparsers(subparsers):
                                       help='Clean all content views', dest='all_views')
     parser_cleanout_view.add_argument('-k', '--keep', help='Keep this many of the newest unused versions',
                                       default=0, type=int)
-    parser_cleanout_view.set_defaults(funcname='cleanout-view')
+    parser_cleanout_view.set_defaults(funcname='cleanout_view')
 
 
 # noinspection PyUnusedLocal
