@@ -66,7 +66,7 @@ def mass_promote_env(connection, cvs, environment):
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, config_obj, environment, **kwargs):
+def main(contentviews, connection, environment, config_obj=None, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
@@ -80,7 +80,7 @@ def main(contentviews, connection, config_obj, environment, **kwargs):
         config = config_obj
         try:
             cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
-        except ConfigParser.NoSectionError:
+        except (ConfigParser.NoSectionError, AttributeError):
             cvs = contentviews
     else:
         cvs = contentviews
