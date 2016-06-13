@@ -15,8 +15,7 @@
 
 import logging
 from ConfigParser import NoSectionError
-
-from katlibs.main.katello_helpers import get_components, KatelloConnection, ViewNotFoundError
+from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError
 
 
 def add_to_subparsers(subparsers):
@@ -54,7 +53,7 @@ def main(content_view, connection, all_views=False, keep=0, **kwargs):
             view_dict = get_components(connection.content_views, ('name', view_name))
         except TypeError:
             logging.error('View %s not found!' % view_name)
-            raise ViewNotFoundError('View {} not found'.format(view_name))
+            raise NotFoundError('View {} not found'.format(view_name))
 
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
 

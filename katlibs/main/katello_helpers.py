@@ -242,13 +242,8 @@ class NoComposites(Exception):
         sys.exit(1)
 
 
-class NoVersionError(Exception):
+class NotFoundError(Exception):
     def __init__(self, message):
         print message
         sys.exit(1)
 
-
-class ViewNotFoundError(Exception):
-    def __init__(self, message):
-        print message
-        sys.exit(1)

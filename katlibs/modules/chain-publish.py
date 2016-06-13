@@ -15,7 +15,7 @@
 
 import ConfigParser
 import time
-from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoComposites
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NotFoundError
 
 
 def add_to_subparsers(subparsers):
@@ -91,7 +91,7 @@ def recursive_update(connection, cvs):
                                                  c['content_view']['name'] in cvs]
 
     if not viewids_to_update:
-        raise NoComposites('No composite views containing any of "{}"'.format(', '.join(cvs)))
+        raise NotFoundError('No composite views containing any of "{}"'.format(', '.join(cvs)))
 
     viewids_to_update = list(set(viewids_to_update))
 
@@ -140,5 +140,5 @@ def main(contentviews, connection, **kwargs):
 
     try:
         recursive_update(connection, cvs)
-    except NoComposites as error:
+    except NotFoundError as error:
         print error
