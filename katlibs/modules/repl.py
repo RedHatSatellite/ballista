@@ -36,28 +36,26 @@ class Katloop(cmd.Cmd):
     def emptyline(self):
         return
 
-    def do_list_cviews(self, line):
-        if '-j' in shlex.split(line):
+    def do_list_cviews(self, line, *args):
+        splitted_options = shlex.split(line)
+        if '-j' in splitted_options:
             pprint(self.connection.content_views)
-        else:
-            print '\n'.join([c['name'] for c in self.connection.content_views])
+            return
+        for cview in self.connection.content_views:
+            cview_name = cview['name']
+            print cview_name
+            try:
+                versions = get_components(self.connection.content_views, ('name', cview_name))['versions']
+            except KeyError:
+                # We do not yet have a published version
+                continue
+            if '-v' in splitted_options:
+                for version in versions:
+                    print '    Version: {} ({})'.format(version['version'], version['published'])
 
     def help_list_cviews(self):
-        print "Print content views. Pass -j to list them in all their json glory."
-
-    def do_list_versions(self, cview_name):
-        try:
-            versions = get_components(self.connection.content_views, ('name', cview_name))['versions']
-        except KeyError:
-            print "View not found"
-            return False
-        for version in versions:
-            print "Version_id: {}".format(version['version'])
-            print "Date published: {}".format(version['published'])
-            print "-" * 40
-
-    def help_list_versions(self):
-        print "List versions of specified view"
+        print "Print content views." \
+              "Pass -j to list them in all their json glory, -v to list the versions of the views as well"
 
     def postloop(self):
         print
