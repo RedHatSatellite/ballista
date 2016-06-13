@@ -24,7 +24,7 @@ def add_to_subparsers(subparsers):
     parser_promote_env.add_argument('environment', nargs='?', help='Environment to promote to.')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_promote_env.set_defaults(funcname='promote-env')
+    parser_promote_env.set_defaults(funcname='promote_env')
 
 
 def mass_promote_env(connection, cvs, environment):
@@ -66,7 +66,7 @@ def mass_promote_env(connection, cvs, environment):
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, config_obj, environment, **kwargs):
+def main(contentviews, connection, environment, config_obj=None, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
@@ -80,7 +80,7 @@ def main(contentviews, connection, config_obj, environment, **kwargs):
         config = config_obj
         try:
             cvs = [c.strip() for c in config.get(contentviews[0], 'views').split(',')]
-        except ConfigParser.NoSectionError:
+        except (ConfigParser.NoSectionError, AttributeError):
             cvs = contentviews
     else:
         cvs = contentviews
