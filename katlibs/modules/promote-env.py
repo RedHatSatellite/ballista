@@ -52,7 +52,11 @@ def mass_promote_env(connection, cvs, environment):
         except KeyError:
             raise NoVersionError("no published versions found!")
 
-        envid = get_components(connection.environments, ('name', environment))['id']
+        try:
+            envid = get_components(connection.environments, ('name', environment))['id']
+        except KeyError:
+            raise NoVersionError("Environment {} not found".format(environment))
+
         if envid not in latest_version['environment_ids']:
             logging.info('promoting {cvname} to environment {environment}'.format(
                 cvname=cvname,
