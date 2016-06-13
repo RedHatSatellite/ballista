@@ -15,7 +15,7 @@
 
 import ConfigParser
 import logging
-from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NoVersionError
+from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NotFoundError
 
 
 def add_to_subparsers(subparsers):
@@ -50,9 +50,13 @@ def mass_promote_env(connection, cvs, environment):
         try:
             version_id = latest_version['id']
         except KeyError:
-            raise NoVersionError("no published versions found!")
+            raise NotFoundError("no published versions found!")
 
-        envid = get_components(connection.environments, ('name', environment))['id']
+        try:
+            envid = get_components(connection.environments, ('name', environment))['id']
+        except KeyError:
+            raise NotFoundError("Environment {} not found".format(environment))
+
         if envid not in latest_version['environment_ids']:
             logging.info('promoting {cvname} to environment {environment}'.format(
                 cvname=cvname,
