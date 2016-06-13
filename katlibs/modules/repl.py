@@ -14,6 +14,7 @@
 #
 
 import cmd
+import shlex
 from katlibs.main.katello_helpers import get_components
 from pprint import pprint
 import logging
@@ -35,17 +36,14 @@ class Katloop(cmd.Cmd):
     def emptyline(self):
         return
 
-    def do_list_cviews_json(self, line):
-        pprint(self.connection.content_views)
-
-    def help_list_cviews_json(self):
-        print "Print complete content views in json format"
-
     def do_list_cviews(self, line):
-        print '\n'.join([c['name'] for c in self.connection.content_views])
+        if '-j' in shlex.split(line):
+            pprint(self.connection.content_views)
+        else:
+            print '\n'.join([c['name'] for c in self.connection.content_views])
 
     def help_list_cviews(self):
-        print "Print content views"
+        print "Print content views. Pass -j to list them in all their json glory."
 
     def do_list_versions(self, cview_name):
         try:
