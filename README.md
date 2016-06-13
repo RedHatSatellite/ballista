@@ -66,7 +66,7 @@ This command will publish a new version in the Content Views CV\_test1 and CV\_t
 This command promotes the Composite Content Views COMP\_test1 and COMP\_test2 to the "dev" Lifecycle environment:
 
     ./ballista.py --url https://satellite.example.com -u admin -p \
-    --organization Example_organization promote-env COMP_test1 COMP_test2 -e dev
+    --organization Example_organization promote-env dev COMP_test1 COMP_test2
 
 **Cleanout old versions:**  
 This command will clean the old versions in Composite Content View COMP\_test1 and keeps the the versions which are promoted including the last 3 versions:  
