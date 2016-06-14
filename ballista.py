@@ -20,13 +20,13 @@ import sys
 import logging
 from ConfigParser import ConfigParser, NoSectionError
 from getpass import getpass
-from katlibs import modules
+from katlibs import available_modules
 from katlibs.main.katello_helpers import KatelloConnection
 
 
 try:
     if sys.argv[1] == '--list':
-        print '\n'.join(modules.keys())
+        print '\n'.join(available_modules.keys())
         sys.exit()
 except IndexError:
     pass
@@ -43,8 +43,8 @@ parser.add_argument('-p', help='Ask for password on the command line.', action='
                     default=False, dest='password')
 parser.add_argument('--organization', help='Name of the organization', default=None)
 
-for m in modules:
-    modules[m].add_to_subparsers(subparsers)
+for m in available_modules:
+    available_modules[m].add_to_subparsers(subparsers)
 
 args = parser.parse_args()
 passed_args = {k: v for k, v in vars(args).iteritems() if v}
@@ -82,7 +82,7 @@ else:
 passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 passed_args['config_obj'] = config
 
-mod = modules[args.funcname]
+mod = available_modules[args.funcname]
 logging.debug(
     'verbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
         verbose=args.verbose,
