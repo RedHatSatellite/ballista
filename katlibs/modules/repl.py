@@ -16,6 +16,7 @@
 import cmd
 from katlibs.modules import promote_cv
 import shlex
+import sys
 from katlibs.main.katello_helpers import get_components
 from pprint import pprint
 import logging
@@ -57,7 +58,7 @@ class Katloop(cmd.Cmd):
         print "promote specific version:"
         print "   promote <content view name>/<version> <environment>"
 
-    def do_list_cviews(self, line, *args):
+    def do_list_cviews(self, line):
         splitted_options = shlex.split(line)
         if '-j' in splitted_options:
             pprint(self.connection.content_views)
@@ -81,10 +82,19 @@ class Katloop(cmd.Cmd):
     def postloop(self):
         print
 
+    def do_exit(self, line):
+        sys.exit()
+
+    def help_exit(self):
+        print "Exit the repl"
+
     def do_EOF(self, line):
-        return False
+        sys.exit()
 
 
 def main(**kwargs):
     loop = Katloop(kwargs['connection'])
-    loop.cmdloop()
+    try:
+        loop.cmdloop()
+    except KeyboardInterrupt:
+        sys.exit()
