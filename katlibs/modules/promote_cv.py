@@ -50,7 +50,7 @@ def promote_cv(connection, cvname, environment, version=0):
         if version == 0:
             version_id = latest_version['id']
         else:
-            version_id = get_components(versions, ('version', str(version)))
+            version_id = get_components(versions, ('version', version))['id']
     except KeyError:
         raise NotFoundError("No published versions found!")
 

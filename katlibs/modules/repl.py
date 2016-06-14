@@ -14,6 +14,7 @@
 #
 
 import cmd
+from katlibs.modules import promote_cv
 import shlex
 from katlibs.main.katello_helpers import get_components
 from pprint import pprint
@@ -35,6 +36,26 @@ class Katloop(cmd.Cmd):
 
     def emptyline(self):
         return
+
+    def do_promote(self, line):
+
+        splitted_options = shlex.split(line)
+        if '/' in splitted_options[0]:
+            cview_name, version = splitted_options[0].split('/')
+        else:
+            cview_name = splitted_options[0]
+            version = 0
+
+        environment = splitted_options[1]
+
+        promote_cv.promote_cv(self.connection, cvname=cview_name, environment=environment, version=version)
+
+    def help_promote(self):
+        print "Promote a content view to a givent environment. Optionally you can specify a version."
+        print "Promote newest version:"
+        print "   promote <content view name> <environment>"
+        print "promote specific version:"
+        print "   promote <content view name>/<version> <environment>"
 
     def do_list_cviews(self, line, *args):
         splitted_options = shlex.split(line)
