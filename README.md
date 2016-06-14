@@ -112,7 +112,7 @@ All above command line options can also be defined in an ini configuration file 
     views = COMP_RHEL6_WebSphere, COMP_RHEL7_JBoss
 
 # Contributing/keeping up-to-date
-Ballista is maintained primarily at [Gitlab](https://gitlab.com/parapet/ballista). Merge requests or issues should be created there.
+Ballista is maintained primarily at [Github](https://github.com/RedHatSatellite/ballista). Merge requests or issues should be created there.
 
 # Authors
 Ballista is written by Yoram Hekma <hekma.yoram@gmail.com> and Joey Loman <joey@binbash.org>.
