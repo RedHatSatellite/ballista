@@ -19,50 +19,52 @@ from katlibs.main.katello_helpers import get_components, KatelloConnection, get_
 
 
 def add_to_subparsers(subparsers):
-    parser_promote_env = subparsers.add_parser('promote-env',
+    parser_promote_env = subparsers.add_parser('promote-cv',
                                                help='Mass promote a environment to all given contentviews')
     parser_promote_env.add_argument('environment', nargs='?', help='Environment to promote to.')
     parser_promote_env.add_argument('contentviews', nargs='+',
                                     help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_promote_env.set_defaults(funcname='promote_env')
+    parser_promote_env.set_defaults(funcname='promote_cv')
 
 
-def mass_promote_env(connection, cvs, environment):
+def promote_cv(connection, cvname, environment, version=0):
     """
     :param connection: The katello connection instance
     :type connection: KatelloConnection
-    :param cvs: list of content view names to update
-    :type cvs: list
+    :param cvname: name of the content view to promote
+    :type cvname: str
     :type environment: str
+    :param version: Version to promote, when not given latest is used
+    :type version: int
     """
     all_views = connection.content_views
-    views_to_promote = dict()
+    try:
+        cvid = get_components(all_views, ('name', cvname))['id']
+    except KeyError:
+        raise NotFoundError("Content view {} not found".format(cvname))
 
-    # Get the ids of the views
-    for view in all_views:
-        if view['name'] in cvs:
-            views_to_promote[view['name']] = view['id']
+    versions = get_components(connection.content_views, ('id', cvid))['versions']
+    latest_version = get_latest_version(versions)
 
-    for cvname, cvid in views_to_promote.iteritems():
-        versions = get_components(connection.content_views, ('id', cvid))['versions']
-        latest_version = get_latest_version(versions)
-
-        try:
+    try:
+        if version == 0:
             version_id = latest_version['id']
-        except KeyError:
-            raise NotFoundError("no published versions found!")
+        else:
+            version_id = get_components(versions, ('version', str(version)))
+    except KeyError:
+        raise NotFoundError("No published versions found!")
 
-        try:
-            envid = get_components(connection.environments, ('name', environment))['id']
-        except KeyError:
-            raise NotFoundError("Environment {} not found".format(environment))
+    try:
+        envid = get_components(connection.environments, ('name', environment))['id']
+    except KeyError:
+        raise NotFoundError("Environment {} not found".format(environment))
 
-        if envid not in latest_version['environment_ids']:
-            logging.info('promoting {cvname} to environment {environment}'.format(
-                cvname=cvname,
-                environment=environment
-            ))
-            connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
+    if envid not in latest_version['environment_ids']:
+        logging.info('promoting {cvname} to environment {environment}'.format(
+            cvname=cvname,
+            environment=environment
+        ))
+        connection.promote_view(version_id, {'id': version_id, 'environment_id': envid, 'force': True})
 
 
 # noinspection PyUnusedLocal
@@ -85,4 +87,5 @@ def main(contentviews, connection, environment, config_obj=None, **kwargs):
     else:
         cvs = contentviews
 
-    mass_promote_env(connection, cvs, environment)
+    for cv in cvs:
+        promote_cv(connection, cv, environment)
