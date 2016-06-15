@@ -14,6 +14,7 @@
 #
 
 import ConfigParser
+import logging
 import time
 from katlibs.main.katello_helpers import get_components, KatelloConnection, get_latest_version, NotFoundError
 
@@ -86,6 +87,7 @@ def recursive_update(connection, cvs):
     comps_to_update = list()
 
     # Get ids of views
+    logging.debug('Determining viewids to update....')
     for view in all_views:
         viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
                                                  c['content_view']['name'] in cvs]
@@ -94,17 +96,22 @@ def recursive_update(connection, cvs):
         raise NotFoundError('No composite views containing any of "{}"'.format(', '.join(cvs)))
 
     viewids_to_update = list(set(viewids_to_update))
+    logging.debug('We need to update the following ids: {}'.format(viewids_to_update))
 
     for cvid in viewids_to_update:
+        logging.info('Publishing {}'.format(get_components(all_views, ('id', cvid))['name']))
         connection.publish_view(cvid, {'id': cvid})
 
     # Find which composites are impacted
+    logging.debug('Check which composites we need to update')
     for view in all_views:
         if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
                 viewids_to_update):
+            logging.info('We need to update {}'.format(view['name']))
             comps_to_update.append(view)
 
     # Get the ids of the new versions
+    logging.debug('Get version ids of the composite views')
     for cvid in viewids_to_update:
         versions = get_components(connection.content_views, ('id', cvid))['versions']
         latest_version = int(get_latest_version(versions)['id'])
@@ -113,11 +120,14 @@ def recursive_update(connection, cvs):
     # Wait until all the cvs are updated
     while True:
         if set(get_running_publishes(connection.foreman_tasks)).intersection(viewids_to_update):
+            logging.info('Waiting for baseviews to finish publishing')
             time.sleep(10)
         else:
+            logging.info('Done')
             break
 
     for view in comps_to_update:
+        logging.info('Publishing {}'.format(view['name']))
         update_and_publish_comp(connection, view, version_dict)
 
 
