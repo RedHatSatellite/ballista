@@ -29,7 +29,7 @@ def add_to_subparsers(subparsers):
 
 
 # noinspection PyUnusedLocal
-def main(content_view, connection, all_views=False, keep=0, **kwargs):
+def main(connection, content_view=None, all_views=False, keep=0, **kwargs):
     """
     :type keep: int or bool
     :type all_views: bool
