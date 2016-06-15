@@ -36,8 +36,7 @@ def get_from_config(config_obj, item, section='main'):
     try:
         return config_obj.get(section, item)
     except (NoSectionError, NoOptionError):
-        print "{} not passed on command line and not found in config".format(item)
-        sys.exit()
+        return False
 
 parser = argparse.ArgumentParser(prog='ballista.py')
 subparsers = parser.add_subparsers(help='sub-command help')
@@ -67,6 +66,11 @@ else:
 url = passed_args.get('url', get_from_config(config, 'url'))
 username = passed_args.get('username', get_from_config(config, 'username'))
 organization = passed_args.get('organization', get_from_config(config, 'organization'))
+
+for item in [('url', url), ('username', username), ('organization', organization)]:
+    if not item[1]:
+        print "{} not specified on command line and not specified in config file".format(item[0])
+        sys.exit(1)
 
 if args.password:
     password = getpass('Password: ')
