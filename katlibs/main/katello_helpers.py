@@ -37,9 +37,9 @@ class KatelloConnection(object):
         """
         self.organization = organization
         self.base_url = base_url
-        self.verify = verify
         self.session = requests.Session()
         self.session.auth = (username, password)
+        self.session.verify = verify
         self.post_headers = {'Content-Type': 'application/json'}
         if not verify:
             from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -62,7 +62,7 @@ class KatelloConnection(object):
         results = list()
 
         while True:
-            page_result = self.session.get('%s?page=%s' % (url, counter), verify=self.verify).json()['results']
+            page_result = self.session.get(url, params={'page': counter}).json()['results']
             if not page_result:
                 break
             results += page_result
@@ -85,7 +85,7 @@ class KatelloConnection(object):
                 return self.orgid
 
         if item == 'foreman_tasks':
-            return self.session.get('%s/foreman_tasks/api/tasks' % self.base_url, verify=self.verify).json()['results']
+            return self.session.get('%s/foreman_tasks/api/tasks' % self.base_url).json()['results']
 
         try:
             return self._get_katello_dict('%s/' % item)
@@ -246,4 +246,3 @@ class NotFoundError(Exception):
     def __init__(self, message):
         print message
         sys.exit(1)
-
