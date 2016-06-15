@@ -4,6 +4,44 @@ Ballista is a Katello/Red Hat Satellite 6 command-line tool which makes some adm
 
 ## Current features/modules
 
+### REPL (read-evaluate-print-loop)
+
+You can use the (not quite finished yet) repl interface to interactively list and promote your content views:
+
+```
+[nix-shell:~/Dev/ballista]$ ./ballista.py -c example_config.ini repl
+(Cmd) help
+
+Documented commands (type help <topic>):
+========================================
+exit  help  list_cviews  promote
+
+Undocumented commands:
+======================
+EOF
+
+(Cmd) help list_cviews
+Print content views.Pass -j to list them in all their json glory, -v to list the versions of the views as well
+(Cmd) list_cviews -v
+Default Organization View
+    Version: 1.0 (2016-06-13 12:10:37 UTC)
+Comp2
+    Version: 1.0 (2016-06-13 13:06:33 UTC)
+Comp1
+    Version: 1.0 (2016-06-13 13:06:16 UTC)
+    Version: 2.0 (2016-06-13 14:03:08 UTC)
+----- snip -----
+(Cmd) help promote
+Promote a content view to a givent environment. Optionally you can specify a version.
+Promote newest version:
+   promote <content view name> <environment>
+promote specific version:
+   promote <content view name>/<version> <environment>
+(Cmd) promote Comp2 Devel
+(Cmd)
+```
+
+
 ### Chain publishing of Content Views
 
 With Ballista it's possible to publish a new version of one or more Content Views and automatically attach them to the related Composite Content Views with a single command. When the new version is published the Composite Content Views that contain the newly published Content View will also be published to a new version. Note that this new version is not yet promoted, so you still have control over your normal patch and lifecycle management.
