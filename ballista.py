@@ -18,7 +18,7 @@
 import argparse
 import sys
 import logging
-from ConfigParser import ConfigParser, NoSectionError
+from ConfigParser import ConfigParser, NoSectionError, NoOptionError
 from getpass import getpass
 from katlibs import available_modules
 from katlibs.main.katello_helpers import KatelloConnection
@@ -30,6 +30,14 @@ try:
         sys.exit()
 except IndexError:
     pass
+
+
+def get_from_config(config_obj, item, section='main'):
+    try:
+        return config_obj.get(section, item)
+    except (NoSectionError, NoOptionError):
+        print "{} not passed on command line and not found in config".format(item)
+        sys.exit()
 
 parser = argparse.ArgumentParser(prog='ballista.py')
 subparsers = parser.add_subparsers(help='sub-command help')
@@ -56,23 +64,9 @@ if args.verbose:
 else:
     logging.basicConfig(level=logging.INFO)
 
-try:
-    url = passed_args.get('url', config.get('main', 'url'))
-except NoSectionError:
-    print "No url specified, and none found in {}".format(args.conf_file)
-    sys.exit(1)
-
-try:
-    username = passed_args.get('username', config.get('main', 'username'))
-except NoSectionError:
-    print "No username specified, and none found in {}".format(args.conf_file)
-    sys.exit(1)
-
-try:
-    organization = passed_args.get('organization', config.get('main', 'organization'))
-except NoSectionError:
-    print "No organization specified, and none found in {}".format(args.conf_file)
-    sys.exit(1)
+url = passed_args.get('url', get_from_config(config, 'url'))
+username = passed_args.get('username', get_from_config(config, 'username'))
+organization = passed_args.get('organization', get_from_config(config, 'organization'))
 
 if args.password:
     password = getpass('Password: ')
