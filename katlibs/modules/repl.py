@@ -30,7 +30,7 @@ def add_to_subparsers(subparsers):
 
 
 # noinspection PyPep8Naming,PyMethodMayBeStatic,PyUnusedLocal
-class Katloop(cmd.Cmd):
+class Katloop(cmd.Cmd):  # TODO: Fix name from "Cmd" to something more descriptive
     def __init__(self, connection):
         cmd.Cmd.__init__(self)
         self.connection = connection
@@ -73,6 +73,7 @@ class Katloop(cmd.Cmd):
                 continue
             if '-v' in splitted_options:
                 for version in versions:
+                    # TODO: list environment after the version
                     print '    Version: {} ({})'.format(version['version'], version['published'])
 
     def help_list_cviews(self):
