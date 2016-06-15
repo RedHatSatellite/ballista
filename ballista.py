@@ -77,7 +77,12 @@ if args.password:
 else:
     password = config.get('main', 'password')
 
-passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+try:
+    passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+except Exception as error:
+    print "Could not set up connection:\n{}".format(error.message)
+    sys.exit()
+
 passed_args['config_obj'] = config
 
 mod = available_modules[args.funcname]
@@ -89,4 +94,8 @@ logging.debug(
         org=organization,
         modname=mod.__name__,
     ))
-mod.main(**passed_args)
+try:
+    mod.main(**passed_args)
+except Exception as error:
+    print "Execution failed. Error was:\n{}".format(error.message)
+    sys.exit(1)

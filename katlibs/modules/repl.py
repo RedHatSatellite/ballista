@@ -83,12 +83,14 @@ class Katloop(cmd.Cmd):
         print
 
     def do_exit(self, line):
+        print
         sys.exit()
 
     def help_exit(self):
         print "Exit the repl"
 
     def do_EOF(self, line):
+        print
         sys.exit()
 
 
