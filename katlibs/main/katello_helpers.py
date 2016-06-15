@@ -19,6 +19,21 @@ import json
 import sys
 
 
+class NoComposites(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+class NotFoundError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+class AuthenticationError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
 class KatelloConnection(object):
     def __init__(self, base_url, username, password, verify, organization):
         """
@@ -45,6 +60,10 @@ class KatelloConnection(object):
             from requests.packages.urllib3.exceptions import InsecureRequestWarning
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+        # Check if we can authenticate
+        if 'results' not in self.session.get('%s/katello/api/v2/organizations' % self.base_url).json():
+            raise AuthenticationError('Authentication failed')
+
     def _query_api(self, url):
         """
         Succesively query the API, appending "?page=<int>" to the url, each time incrementing the int by one.
@@ -63,6 +82,7 @@ class KatelloConnection(object):
 
         while True:
             page_result = self.session.get(url, params={'page': counter}).json()['results']
+
             if not page_result:
                 break
             results += page_result
@@ -85,7 +105,7 @@ class KatelloConnection(object):
                 return self.orgid
 
         if item == 'foreman_tasks':
-            return self.session.get('%s/foreman_tasks/api/tasks' % self.base_url).json()['results']
+            return self._query_api('%s/foreman_tasks/api/tasks' % self.base_url)
 
         try:
             return self._get_katello_dict('%s/' % item)
@@ -234,15 +254,3 @@ def get_latest_version(version_list):
         pass
     except IndexError:
         return dict()
-
-
-class NoComposites(Exception):
-    def __init__(self, message):
-        print message
-        sys.exit(1)
-
-
-class NotFoundError(Exception):
-    def __init__(self, message):
-        print message
-        sys.exit(1)

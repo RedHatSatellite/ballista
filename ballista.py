@@ -36,8 +36,7 @@ def get_from_config(config_obj, item, section='main'):
     try:
         return config_obj.get(section, item)
     except (NoSectionError, NoOptionError):
-        print "{} not passed on command line and not found in config".format(item)
-        sys.exit()
+        return False
 
 parser = argparse.ArgumentParser(prog='ballista.py')
 subparsers = parser.add_subparsers(help='sub-command help')
@@ -68,12 +67,22 @@ url = passed_args.get('url', get_from_config(config, 'url'))
 username = passed_args.get('username', get_from_config(config, 'username'))
 organization = passed_args.get('organization', get_from_config(config, 'organization'))
 
+for item in [('url', url), ('username', username), ('organization', organization)]:
+    if not item[1]:
+        print "{} not specified on command line and not specified in config file".format(item[0])
+        sys.exit(1)
+
 if args.password:
     password = getpass('Password: ')
 else:
     password = config.get('main', 'password')
 
-passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+try:
+    passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
+except Exception as error:
+    print "Could not set up connection:\n{}".format(error.message)
+    sys.exit()
+
 passed_args['config_obj'] = config
 
 mod = available_modules[args.funcname]
@@ -85,4 +94,8 @@ logging.debug(
         org=organization,
         modname=mod.__name__,
     ))
-mod.main(**passed_args)
+try:
+    mod.main(**passed_args)
+except Exception as error:
+    print "Execution failed. Error was:\n{}".format(error.message)
+    sys.exit(1)
