@@ -52,7 +52,7 @@ def promote_cv(connection, cvname, environment, version=0):
         else:
             version_id = get_components(versions, ('version', version))['id']
     except KeyError:
-        raise NotFoundError("No published versions found!")
+        raise NotFoundError("No published versions found of content view {}!".format(cvname))
 
     try:
         envid = get_components(connection.environments, ('name', environment))['id']
@@ -88,4 +88,7 @@ def main(contentviews, connection, environment, config_obj=None, **kwargs):
         cvs = contentviews
 
     for cv in cvs:
-        promote_cv(connection, cv, environment)
+        try:
+            promote_cv(connection, cv, environment)
+        except Exception as error:
+            print error.message
