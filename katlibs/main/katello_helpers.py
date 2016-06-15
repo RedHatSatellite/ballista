@@ -16,7 +16,6 @@
 
 import requests
 import json
-import sys
 
 
 class NoComposites(Exception):

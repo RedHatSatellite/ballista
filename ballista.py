@@ -32,9 +32,9 @@ except IndexError:
     pass
 
 
-def get_from_config(config_obj, item, section='main'):
+def get_from_config(config_obj, i, section='main'):
     try:
-        return config_obj.get(section, item)
+        return config_obj.get(section, i)
     except (NoSectionError, NoOptionError):
         return False
 
