@@ -112,15 +112,15 @@ def recursive_update(connection, cvs, logger):
     # Wait until all the cvs are updated
     while True:
         for viewid, version_id in latest_versions.iteritems():
-            version_task_dict = connection.get_version_info(version_id)['latest_event']['task']
-            if version_task_dict['state'] == 'stopped' and version_task_dict['result'] == 'sucess':
-                viewids_to_update.remove(viewid)
+            version_task_dict = connection.get_version_info(version_id)['last_event']['task']
+            if str(version_task_dict['state']) == 'stopped' and str(version_task_dict['result']) == 'success':
+                viewids_to_update.remove(int(viewid))
 
         if len(viewids_to_update) == 0:
             logger.info('Baseviews finished updating')
             break
 
-        logger.info('Waiting for baseviews to finish publishing')
+        logger.info('Waiting for baseviews to finish publishing, {} to go'.format(len(viewids_to_update)))
         time.sleep(10)
 
     for view in comps_to_update:
