@@ -72,12 +72,14 @@ def update_and_publish_comp(connection, compview, version_dict):
     connection.publish_view(compview['id'])
 
 
-def recursive_update(connection, cvs):
+def recursive_update(connection, cvs, logger):
     """
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     :param cvs: list of content view names to update
     :type cvs: list
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     :return:
     """
     all_views = connection.content_views
@@ -131,20 +133,15 @@ def recursive_update(connection, cvs):
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, **kwargs):
+def main(contentviews, connection, logger, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
     :param connection: The katello connection instance
     :type connection: KatelloConnection
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     """
-
-    try:
-        logger = kwargs['logger']
-    except KeyError:
-        import logging as logger
-
-    global logger
 
     if len(contentviews) == 1:
         config = kwargs['config_obj']
@@ -156,6 +153,6 @@ def main(contentviews, connection, **kwargs):
         cvs = contentviews
 
     try:
-        recursive_update(connection, cvs)
+        recursive_update(connection, cvs, logger)
     except NotFoundError as error:
         print error

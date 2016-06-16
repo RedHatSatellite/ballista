@@ -21,7 +21,8 @@ from katlibs.main.katello_helpers import get_components
 from pprint import pprint
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 
 def add_to_subparsers(subparsers):
@@ -49,7 +50,13 @@ class Katloop(cmd.Cmd):
 
         environment = splitted_options[1]
 
-        promote_cv.promote_cv(self.connection, cvname=cview_name, environment=environment, version=version)
+        promote_cv.promote_cv(
+            self.connection,
+            logger=logger,
+            cvname=cview_name,
+            environment=environment,
+            version=version,
+        )
 
     def help_promote(self):
         print "Promote a content view to a givent environment. Optionally you can specify a version."

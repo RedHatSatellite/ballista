@@ -29,20 +29,15 @@ def add_to_subparsers(subparsers):
 
 
 # noinspection PyUnusedLocal
-def main(connection, content_view=None, all_views=False, keep=0, **kwargs):
+def main(connection, logger, content_view=None, all_views=False, keep=0, **kwargs):
     """
     :type keep: int or bool
     :type all_views: bool
     :type connection: KatelloConnection
     :type content_view: list
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     """
-
-    try:
-        logger = kwargs['logger']
-    except KeyError:
-        import logging as logger
-
-    global logger
 
     if not keep:
         keep = None
