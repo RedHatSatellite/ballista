@@ -26,6 +26,8 @@ from katlibs.main.katello_helpers import KatelloConnection
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+logger.addHandler(ch)
 
 try:
     if sys.argv[1] == '--list':
