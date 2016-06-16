@@ -24,6 +24,11 @@ from katlibs import available_modules
 from katlibs.main.katello_helpers import KatelloConnection
 
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+logger.addHandler(ch)
+
 try:
     if sys.argv[1] == '--list':
         print '\n'.join(available_modules.keys())
@@ -59,9 +64,7 @@ config = ConfigParser()
 config.read(args.conf_file)
 
 if args.verbose:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
 url = passed_args.get('url', get_from_config(config, 'url'))
 username = passed_args.get('username', get_from_config(config, 'username'))
@@ -84,10 +87,11 @@ except Exception as error:
     sys.exit()
 
 passed_args['config_obj'] = config
+passed_args['logger'] = logger
 
 mod = available_modules[args.funcname]
-logging.debug(
-    'verbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
+logger.debug(
+    '\nverbose: {verbose}\nurl: {url}\nusername: {user}\norganization: {org}\nmodule: {modname}'.format(
         verbose=args.verbose,
         url=url,
         user=username,
