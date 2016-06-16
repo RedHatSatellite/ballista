@@ -110,10 +110,16 @@ def recursive_update(connection, cvs, logger):
         latest_versions[str(viewid)] = get_latest_version(versions)['id']
 
     # Wait until all the cvs are updated
+    failed_content_views = list()
     while True:
         for viewid, version_id in latest_versions.iteritems():
             version_task_dict = connection.get_version_info(version_id)['last_event']['task']
-            if str(version_task_dict['state']) == 'stopped' and str(version_task_dict['result']) == 'success':
+            if version_task_dict['pending']:
+                logger.info('Wating for content_view id {}'.format(viewid))
+            elif not version_task_dict['result'] == 'success':
+                failed_content_views.append(int(viewid))
+                viewids_to_update.remove(int(viewid))
+            else:
                 viewids_to_update.remove(int(viewid))
 
         if len(viewids_to_update) == 0:
@@ -122,6 +128,10 @@ def recursive_update(connection, cvs, logger):
 
         logger.info('Waiting for baseviews to finish publishing, {} to go'.format(len(viewids_to_update)))
         time.sleep(10)
+
+    if failed_content_views:
+        failed_views = [get_components(all_views, ('id', failed_id))['name'] for failed_id in failed_content_views]
+        logger.warning('Warning: some views failed to publish: {}'.format(failed_views))
 
     for view in comps_to_update:
         logger.info('Publishing {}'.format(view['name']))
