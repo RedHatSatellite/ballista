@@ -26,22 +26,6 @@ def add_to_subparsers(subparsers):
     parser_publish_chain.set_defaults(funcname='chain_publish')
 
 
-def get_running_publishes(tasklist):
-    """
-    Returns a list of content view ids that are being published
-    :type tasklist: dict
-    :param tasklist: List of tasks as returned from the api (foreman_tasks)
-    :returns: List of running tasks (list of dicts)
-    :rtype: list
-    """
-    running_publishes = list()
-    for task in tasklist:
-        if task['state'] == 'running' and task['label'] == 'Actions::Katello::ContentView::Publish':
-            running_publishes.append(task['input']['content_view']['id'])
-
-    return running_publishes
-
-
 def update_and_publish_comp(connection, compview, version_dict):
     """
     Update and publish the content view with the newest version of
@@ -118,14 +102,26 @@ def recursive_update(connection, cvs, logger):
         latest_version = int(get_latest_version(versions)['id'])
         version_dict[str(cvid)] = latest_version
 
+    # Build a dictionary like:
+    # {<viewid>: <latest version id>}
+    latest_versions = dict()
+    for viewid in viewids_to_update:
+        versions = get_components(connection.content_views, ('id', viewid))['versions']
+        latest_versions[str(viewid)] = get_latest_version(versions)['id']
+
     # Wait until all the cvs are updated
     while True:
-        if set(get_running_publishes(connection.foreman_tasks)).intersection(viewids_to_update):
-            logger.info('Waiting for baseviews to finish publishing')
-            time.sleep(10)
-        else:
+        for viewid, version_id in latest_versions.iteritems():
+            version_task_dict = connection.get_version_info(version_id)['last_event']['task']
+            if str(version_task_dict['state']) == 'stopped' and str(version_task_dict['result']) == 'success':
+                viewids_to_update.remove(int(viewid))
+
+        if len(viewids_to_update) == 0:
             logger.info('Baseviews finished updating')
             break
+
+        logger.info('Waiting for baseviews to finish publishing, {} to go'.format(len(viewids_to_update)))
+        time.sleep(10)
 
     for view in comps_to_update:
         logger.info('Publishing {}'.format(view['name']))
