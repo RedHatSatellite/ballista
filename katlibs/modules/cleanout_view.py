@@ -29,30 +29,39 @@ def add_to_subparsers(subparsers):
 
 
 # noinspection PyUnusedLocal
-def main(connection, content_view=None, all_views=False, keep=0, **kwargs):
+def main(connection, logger, content_view=None, all_views=False, keep=0, **kwargs):
     """
     :type keep: int or bool
     :type all_views: bool
     :type connection: KatelloConnection
     :type content_view: list
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     """
 
     if not keep:
         keep = None
 
     if all_views:
+        logger.debug('Going to clean all content views as instructed, keeping {} versions'.format(keep))
+        logger.debug('Getting all content views')
         view_names = [view['name'] for view in connection.content_views]
+        logger.debug('Found: {} to clean'.format(all_views))
     else:
         try:
+            logger.debug('Checking if {} is defined in config file')
             view_names = [c.strip() for c in kwargs['config_obj'].get(content_view[0], 'views').split(',')]
+            logger.debug('Yes, we are going to clean {}'.format(view_names))
         except NoSectionError:
+            logger.debug('No, we are cleaning {}'.format(content_view))
             view_names = content_view
 
     for view_name in view_names:
         try:
+            logger.debug('Getting info for {}'.format(view_name))
             view_dict = get_components(connection.content_views, ('name', view_name))
         except TypeError:
-            logging.error('View %s not found!' % view_name)
+            logger.error('View %s not found!' % view_name)
             raise NotFoundError('View {} not found'.format(view_name))
 
         ids_to_remove = [version['id'] for version in view_dict['versions'] if not version['environment_ids']]
@@ -61,6 +70,8 @@ def main(connection, content_view=None, all_views=False, keep=0, **kwargs):
             ids_to_remove = sorted(ids_to_remove)[:-keep]
         except TypeError:
             pass
+
+        logger.debug("We are going to remove the following versions id's: {}".format(ids_to_remove))
 
         for version_id in ids_to_remove:
             logging.info('Removing version_id %s' % version_id)

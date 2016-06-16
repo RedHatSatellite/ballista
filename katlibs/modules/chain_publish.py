@@ -72,12 +72,14 @@ def update_and_publish_comp(connection, compview, version_dict):
     connection.publish_view(compview['id'])
 
 
-def recursive_update(connection, cvs):
+def recursive_update(connection, cvs, logger):
     """
     :param connection: The katello connection instance
     :type connection: KatelloConnection
     :param cvs: list of content view names to update
     :type cvs: list
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     :return:
     """
     all_views = connection.content_views
@@ -86,6 +88,7 @@ def recursive_update(connection, cvs):
     comps_to_update = list()
 
     # Get ids of views
+    logger.debug('Determining viewids to update....')
     for view in all_views:
         viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
                                                  c['content_view']['name'] in cvs]
@@ -94,17 +97,22 @@ def recursive_update(connection, cvs):
         raise NotFoundError('No composite views containing any of "{}"'.format(', '.join(cvs)))
 
     viewids_to_update = list(set(viewids_to_update))
+    logger.debug('We need to update the following ids: {}'.format(viewids_to_update))
 
     for cvid in viewids_to_update:
+        logger.info('Publishing {}'.format(get_components(all_views, ('id', cvid))['name']))
         connection.publish_view(cvid, {'id': cvid})
 
     # Find which composites are impacted
+    logger.debug('Check which composites we need to update')
     for view in all_views:
         if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
                 viewids_to_update):
+            logger.info('We need to update {}'.format(view['name']))
             comps_to_update.append(view)
 
     # Get the ids of the new versions
+    logger.debug('Get version ids of the composite views')
     for cvid in viewids_to_update:
         versions = get_components(connection.content_views, ('id', cvid))['versions']
         latest_version = int(get_latest_version(versions)['id'])
@@ -113,22 +121,28 @@ def recursive_update(connection, cvs):
     # Wait until all the cvs are updated
     while True:
         if set(get_running_publishes(connection.foreman_tasks)).intersection(viewids_to_update):
+            logger.info('Waiting for baseviews to finish publishing')
             time.sleep(10)
         else:
+            logger.info('Baseviews finished updating')
             break
 
     for view in comps_to_update:
+        logger.info('Publishing {}'.format(view['name']))
         update_and_publish_comp(connection, view, version_dict)
 
 
 # noinspection PyUnusedLocal
-def main(contentviews, connection, **kwargs):
+def main(contentviews, connection, logger, **kwargs):
     """
     :param contentviews: List of content views to update
     :type contentviews: list
     :param connection: The katello connection instance
     :type connection: KatelloConnection
+    :param logger: Logger object
+    :type logger: logging.RootLogger
     """
+
     if len(contentviews) == 1:
         config = kwargs['config_obj']
         try:
@@ -139,6 +153,6 @@ def main(contentviews, connection, **kwargs):
         cvs = contentviews
 
     try:
-        recursive_update(connection, cvs)
+        recursive_update(connection, cvs, logger)
     except NotFoundError as error:
         print error
