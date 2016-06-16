@@ -150,6 +150,12 @@ class KatelloConnection(object):
             if org['name'] == self.organization:
                 return org['id']
 
+    def get_version_info(self, version_id):
+        return self.session.get(
+            '%s/katello/api/content_view_versions/%s' % (self.base_url, version_id),
+            headers=self.post_headers,
+        ).json()
+
     def get_collection_contents(self, collection_name):
         """
         Get the hosts that belong to a host_collection
