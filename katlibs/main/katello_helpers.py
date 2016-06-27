@@ -245,17 +245,3 @@ def get_components(datalist, index):
     return dict()
 
 
-def get_latest_version(version_list):
-    """
-    :param version_list: List of version dictionaries as returned by api (versions property of a view)
-    :type version_list: list
-    :returns: The id of the latest version
-    :rtype: dict
-    """
-    try:
-        highest_ver = sorted([float(v['version']) for v in version_list])[-1]
-        return get_components(version_list, ('version', unicode(highest_ver)))
-    except KeyError:
-        pass
-    except IndexError:
-        return dict()
