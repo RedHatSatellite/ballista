@@ -156,6 +156,54 @@ class KatelloConnection(object):
             headers=self.post_headers,
         ).json()
 
+    def get_compute_profiles(self, profile_id):
+        """
+        Get the compute profiles
+
+        :param profile_id: the compute profile id
+        :type profile_id: int or str
+        :return: List of compute profile dicts
+        :rtype: list
+        """
+        return self.session.get(
+            '%s/api/compute_profiles/%s' % (self.base_url, profile_id),
+            headers=self.post_headers,
+        ).json()
+
+    def create_compute_profile(self, json_data=None):
+        """
+        Create a compute profile
+
+        :param json_data: the json data structure object
+        :type json_data: str
+        :return: List of newly created compute profile dicts
+        :rtype: list
+        """
+        return self.session.post(
+            '%s/api/compute_profiles' % self.base_url,
+            data=json_data,
+            headers=self.post_headers,
+        ).json()
+
+    def add_compute_attributes(self, cr_id, cp_id, data=None):
+        """
+        Add the compute attributes to the compute profiles
+
+        :param cr_id: compute resource id
+        :type cr_id: int or str
+        :param cp_id: compute profile id
+        :type cp_id: int or str
+        :param data: Additional post data
+        :type data: dict
+        :return: List of compute profile dicts
+        :rtype: list
+        """
+        return self.session.post(
+            '%s/api/compute_resources/%s/compute_profiles/%s/compute_attributes' % (self.base_url, cr_id, cp_id),
+            data=json.dumps(data),
+            headers=self.post_headers,
+        ).json()
+
     def get_collection_contents(self, collection_name):
         """
         Get the hosts that belong to a host_collection
