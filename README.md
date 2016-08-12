@@ -4,6 +4,10 @@ Ballista is a Katello/Red Hat Satellite 6 command-line tool which makes some adm
 
 ## Current features/modules
 
+### Compute resource profile import/export
+
+The newly added compute-resource-profiles option allows you to import or export all your compute profiles. This saves you a lot of clicking in the webinterface and (in case of vmware) wait times everytime the virtualization objects are downloaded during a compute profile selection. For example: you can configure one complete compute profile and export it. Then you can use the exported json file as a template to create the rest of the profiles by creating multiple json files in the same directory. When al the profiles are saved you can import them with a single ballista command (which only takes seconds) and keep them as a backup for future imports.
+
 ### REPL (read-evaluate-print-loop)
 
 You can use the (not quite finished yet) repl interface to interactively list and promote your content views:
@@ -57,17 +61,21 @@ In order to be able to roll back to a previous version of a Content View, previo
 ## Usage
 
     usage: ballista.py [-h] [--list] [-v] [-c CONF_FILE] [--url URL] [-u USERNAME]
-                   [-p] [--organization ORGANIZATION]
-                   {chain-publish,promote-env,cleanout-view} ...
+                       [-p] [--organization ORGANIZATION]
+                       {cleanout-view,repl,compute-resource-profiles,chain-publish,promote-cv}
+                       ...
 
     positional arguments:
-      {chain-publish,promote-env,cleanout-view}
+      {cleanout-view,repl,compute-resource-profiles,chain-publish,promote-cv}
                             sub-command help
+        cleanout-view       Cleanup of content view versions
+        repl                Start repl-shell
+        compute-resource-profiles
+                            Export or import compute resource profiles
         chain-publish       Publish a content view and all composites that contain
                             it
-        promote-env         Mass promote a environment to all given contentviews
-        cleanout-view       Cleanup of content view versions
-
+        promote-cv          Mass promote a environment to all given contentviews
+    
     optional arguments:
       -h, --help            show this help message and exit
       --list                List available actions.
@@ -111,11 +119,24 @@ This command will clean the old versions in Composite Content View COMP\_test1 a
 
     ./ballista.py --url https://satellite.example.com -u admin -p \
     --organization Example_organization cleanout-view COMP_test1 --keep 3
-    
+
 And this will clean the old versions in all (Composite) Content Views and keeps only the versions which are promoted:  
 
     ./ballista.py --url https://satellite.example.com -u admin -p \
     --organization Example_organization cleanout-view --all
+
+**Exporting compute profiles:**  
+This command exports all compute profiles configured for the "VirtualCenterHost" compute resource host to the /tmp/ballista-compute-profiles directory:
+
+    ./ballista.py --url https://satellite.example.com -u admin -p \
+    --organization Example_organization compute-resource-profiles \
+    -cr VirtualCenterHost -e -p /tmp/ballista-compute-profiles
+
+And this command imports all compute profiles located in the directory /tmp/ballista-compute-profiles and configure them for the "VirtualCenterHost" compute resource host:
+
+    ./ballista.py --url https://satellite.example.com -u admin -p \
+    --organization Example_organization compute-resource-profiles \
+    -cr VirtualCenterHost -i -p /tmp/ballista-compute-profiles
 
 ## Ini configuration file
 
