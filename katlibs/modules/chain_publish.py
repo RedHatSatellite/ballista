@@ -15,7 +15,7 @@
 
 import ConfigParser
 import time
-from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError
+from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError, get_latest_cv_version
 
 
 def add_to_subparsers(subparsers):
@@ -99,7 +99,7 @@ def recursive_update(connection, cvs, logger):
     logger.debug('Get version ids of the composite views')
     for cvid in viewids_to_update:
         versions = get_components(connection.content_views, ('id', cvid))['versions']
-        latest_version = int(versions[-1]['id'])
+        latest_version = int(get_latest_cv_version(versions)['id'])
         version_dict[str(cvid)] = latest_version
 
     # Build a dictionary like:
@@ -107,7 +107,7 @@ def recursive_update(connection, cvs, logger):
     latest_versions = dict()
     for viewid in viewids_to_update:
         versions = get_components(connection.content_views, ('id', viewid))['versions']
-        latest_versions[str(viewid)] = versions[-1]['id']
+        latest_versions[str(viewid)] = get_latest_cv_version(versions)['id']
 
     # Wait until all the cvs are updated
     failed_content_views = list()

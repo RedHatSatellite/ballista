@@ -293,3 +293,6 @@ def get_components(datalist, index):
     return dict()
 
 
+def get_latest_cv_version(versionlist):
+    latest_version_id = sorted([float(v['version']) for v in versionlist])[-1]
+    return get_components(versionlist, ('version', str(latest_version_id)))

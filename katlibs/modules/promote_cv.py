@@ -14,7 +14,7 @@
 #
 
 import ConfigParser
-from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError
+from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError, get_latest_cv_version
 
 
 def add_to_subparsers(subparsers):
@@ -53,8 +53,7 @@ def promote_cv(connection, cvname, environment, logger, version=0):
     versions = get_components(connection.content_views, ('id', cvid))['versions']
     logger.debug('Found: {}'.format(versions))
     logger.debug('Get latest version id')
-    latest_version_id = sorted([float(v['version']) for v in versions])[-1]
-    latest_version = get_components(versions, ('version', str(latest_version_id)))
+    latest_version = get_latest_cv_version(versions)
     logger.debug('Latest version id: {}'.format(latest_version))
 
     try:
