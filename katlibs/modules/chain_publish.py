@@ -113,15 +113,15 @@ def recursive_update(connection, cvs, logger):
     failed_content_views = list()
     while True:
         for viewid, version_id in latest_versions.iteritems():
-            version_task_dict = connection.get_version_info(version_id)['last_event']['task']
-            if version_task_dict['pending']:
-                logger.info('Wating for content_view id {}'.format(viewid))
-            elif not version_task_dict['result'] == 'success':
-                failed_content_views.append(int(viewid))
-                viewids_to_update.remove(int(viewid))
-            else:
-                viewids_to_update.remove(int(viewid))
-
+            if int(viewid) in viewids_to_update:
+                version_task_dict = connection.get_version_info(version_id)['last_event']['task']
+                if version_task_dict['pending']:
+                    logger.info('Wating for content_view id {}'.format(viewid))
+                elif not version_task_dict['result'] == 'success':
+                    failed_content_views.append(int(viewid))
+                    viewids_to_update.remove(int(viewid))
+                else:
+                    viewids_to_update.remove(int(viewid))
         if len(viewids_to_update) == 0:
             logger.info('Baseviews finished updating')
             break
