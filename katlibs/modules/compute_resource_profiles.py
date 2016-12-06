@@ -13,21 +13,25 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-import ConfigParser
-import time
+from __future__ import print_function
 import json
 import os
+
 from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError
 
 
 def add_to_subparsers(subparsers):
     parser_compute_resource_profiles = subparsers.add_parser('compute-resource-profiles',
-                                                 help='Export or import compute resource profiles')
-    parser_compute_resource_profiles.add_argument('-cr', '--compute-resource', help='Specify the compute resource', required=True)
+                                                             help='Export or import compute resource profiles')
+    parser_compute_resource_profiles.add_argument('-cr', '--compute-resource', help='Specify the compute resource',
+                                                  required=True)
     iogroup = parser_compute_resource_profiles.add_mutually_exclusive_group(required=True)
-    iogroup.add_argument('-e', '--export-profiles', action='store_true', default=False, help='Specify the path to export the profiles to in JSON format')
-    iogroup.add_argument('-i', '--import-profiles', action='store_true', default=False, help='Specify the profile path with the JSON files to import the profiles')
-    parser_compute_resource_profiles.add_argument('-p', '--path', help='Specify the profile export/import path', required=True)
+    iogroup.add_argument('-e', '--export-profiles', action='store_true', default=False,
+                         help='Specify the path to export the profiles to in JSON format')
+    iogroup.add_argument('-i', '--import-profiles', action='store_true', default=False,
+                         help='Specify the profile path with the JSON files to import the profiles')
+    parser_compute_resource_profiles.add_argument('-p', '--path', help='Specify the profile export/import path',
+                                                  required=True)
     parser_compute_resource_profiles.set_defaults(funcname='compute_resource_profiles')
 
 
@@ -65,7 +69,7 @@ def export_compute_profiles(compute_resource, path, connection, logger):
     for profile in compute_profiles:
         for compute_attribute in profile['compute_attributes']:
             if compute_attribute['compute_resource_name'] == compute_resource:
-                with open(path+'/'+compute_attribute['compute_profile_name']+'.json', 'w') as outfile:
+                with open(path + '/' + compute_attribute['compute_profile_name'] + '.json', 'w') as outfile:
                     json.dump(compute_attribute, outfile)
 
 
@@ -98,12 +102,13 @@ def import_compute_profiles(compute_resource, path, connection, logger):
         json_data = '{ "compute_profile": { "name": "%s" } }' % profile.split('.json')[0]
         cpid = connection.create_compute_profile(json_data)
 
-        with open(path+'/'+profile) as cp_file:
+        with open(path + '/' + profile) as cp_file:
             pdata = json.load(cp_file)
 
         compute_attribute = dict()
         compute_attribute['vm_attrs'] = pdata['vm_attrs']
         connection.add_compute_attributes(crid, cpid['id'], compute_attribute)
+
 
 # noinspection PyUnusedLocal
 def main(connection, logger, compute_resource, path, export_profiles=None, import_profiles=None, **kwargs):
@@ -124,9 +129,9 @@ def main(connection, logger, compute_resource, path, export_profiles=None, impor
         try:
             export_compute_profiles(compute_resource, path, connection, logger)
         except NotFoundError as error:
-            print error
+            print(error)
     elif import_profiles:
         try:
             import_compute_profiles(compute_resource, path, connection, logger)
         except NotFoundError as error:
-            print error
+            print(error)

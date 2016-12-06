@@ -13,6 +13,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import ConfigParser
 import time
 from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError, get_latest_cv_version
@@ -74,8 +75,8 @@ def recursive_update(connection, cvs, logger):
     # Get ids of views
     logger.debug('Determining viewids to update....')
     for view in all_views:
-        viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
-                                                 c['content_view']['name'] in cvs]
+        viewids_to_update += [c['content_view_id'] for c in view['components'] if
+                              c['content_view']['name'] in cvs]
 
     if not viewids_to_update:
         raise NotFoundError('No composite views containing any of "{}"'.format(', '.join(cvs)))
@@ -112,7 +113,7 @@ def recursive_update(connection, cvs, logger):
     # Wait until all the cvs are updated
     failed_content_views = list()
     while True:
-        for viewid, version_id in latest_versions.iteritems():
+        for viewid, version_id in latest_versions.items():
             if int(viewid) in viewids_to_update:
                 version_task_dict = connection.get_version_info(version_id)['last_event']['task']
                 if version_task_dict['pending']:
@@ -161,4 +162,4 @@ def main(contentviews, connection, logger, **kwargs):
     try:
         recursive_update(connection, cvs, logger)
     except NotFoundError as error:
-        print error
+        print(error)

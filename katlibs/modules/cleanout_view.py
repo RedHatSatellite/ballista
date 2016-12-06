@@ -13,6 +13,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import logging
 from ConfigParser import NoSectionError
 from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError
