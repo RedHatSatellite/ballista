@@ -23,6 +23,7 @@ def add_to_subparsers(subparsers):
                                                  help='Publish a content view and all composites that contain it')
     parser_publish_chain.add_argument('contentviews', nargs='+',
                                       help='Specify either a ini file section or direct names of the contentview(s)')
+    parser_publish_chain.add_argument('exclude', help='Comma seperated list of ccvs to exclude', nargs='+')
     parser_publish_chain.set_defaults(funcname='chain_publish')
 
 
@@ -56,7 +57,7 @@ def update_and_publish_comp(connection, compview, version_dict):
     connection.publish_view(compview['id'])
 
 
-def recursive_update(connection, cvs, logger):
+def recursive_update(connection, cvs, logger, comp_excludes=[]):
     """
     :param connection: The katello connection instance
     :type connection: KatelloConnection
@@ -64,6 +65,8 @@ def recursive_update(connection, cvs, logger):
     :type cvs: list
     :param logger: Logger object
     :type logger: logging.RootLogger
+    :param comp_excludes: Composite contentviews to exclude
+    :type comp_excludes: list
     :return:
     """
     all_views = connection.content_views
@@ -90,6 +93,9 @@ def recursive_update(connection, cvs, logger):
     # Find which composites are impacted
     logger.debug('Check which composites we need to update')
     for view in all_views:
+        if view['composite'] and view['name'] in comp_excludes:
+            logger.info('Skipping composite view {} as requested'.format(view['name']))
+            continue
         if view['composite'] and set([i['content_view_id'] for i in view['components']]).intersection(
                 viewids_to_update):
             logger.info('We need to update {}'.format(view['name']))
@@ -158,7 +164,10 @@ def main(contentviews, connection, logger, **kwargs):
     else:
         cvs = contentviews
 
+    comp_excludes_string = kwargs.get('exclude', '')
+    comp_excludes = comp_excludes_string.split(',')
+
     try:
-        recursive_update(connection, cvs, logger)
+        recursive_update(connection, cvs, logger, comp_excludes)
     except NotFoundError as error:
         print error
