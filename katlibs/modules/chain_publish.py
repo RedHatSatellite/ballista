@@ -23,7 +23,7 @@ def add_to_subparsers(subparsers):
                                                  help='Publish a content view and all composites that contain it')
     parser_publish_chain.add_argument('contentviews', nargs='+',
                                       help='Specify either a ini file section or direct names of the contentview(s)')
-    parser_publish_chain.add_argument('exclude', help='Comma seperated list of ccvs to exclude', nargs='+')
+    parser_publish_chain.add_argument('--exclude', help='Argument list of ccvs to exclude', nargs='+', required=False)
     parser_publish_chain.set_defaults(funcname='chain_publish')
 
 
@@ -164,8 +164,7 @@ def main(contentviews, connection, logger, **kwargs):
     else:
         cvs = contentviews
 
-    comp_excludes_string = kwargs.get('exclude', '')
-    comp_excludes = comp_excludes_string.split(',')
+    comp_excludes = kwargs.get('exclude', '')
 
     try:
         recursive_update(connection, cvs, logger, comp_excludes)
