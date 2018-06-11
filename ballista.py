@@ -18,11 +18,13 @@
 import argparse
 import sys
 import logging
+import urllib3
 from ConfigParser import ConfigParser, NoSectionError, NoOptionError
 from getpass import getpass
 from katlibs import available_modules
 from katlibs.main.katello_helpers import KatelloConnection
 
+urllib3.disable_warnings()
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
