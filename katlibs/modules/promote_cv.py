@@ -13,6 +13,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import ConfigParser
 from katlibs.main.katello_helpers import get_components, KatelloConnection, NotFoundError, get_latest_cv_version
 
@@ -113,4 +114,4 @@ def main(contentviews, connection, environment, logger, config_obj=None, **kwarg
         try:
             promote_cv(connection, cv, environment, logger)
         except Exception as error:
-            print error.message
+            print(error.message)

@@ -15,6 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import argparse
 import sys
 import logging
@@ -33,7 +34,7 @@ logger.addHandler(ch)
 
 try:
     if sys.argv[1] == '--list':
-        print '\n'.join(available_modules.keys())
+        print('\n'.join(available_modules.keys()))
         sys.exit()
 except IndexError:
     pass
@@ -61,7 +62,7 @@ for m in available_modules:
     available_modules[m].add_to_subparsers(subparsers)
 
 args = parser.parse_args()
-passed_args = {k: v for k, v in vars(args).iteritems() if v}
+passed_args = {k: v for k, v in vars(args).items() if v}
 config = ConfigParser()
 config.read(args.conf_file)
 
@@ -74,7 +75,7 @@ organization = passed_args.get('organization', get_from_config(config, 'organiza
 
 for item in [('url', url), ('username', username), ('organization', organization)]:
     if not item[1]:
-        print "{} not specified on command line and not specified in config file".format(item[0])
+        print("{} not specified on command line and not specified in config file".format(item[0]))
         sys.exit(1)
 
 if args.password:
@@ -85,7 +86,7 @@ else:
 try:
     passed_args['connection'] = KatelloConnection(url, username, password, verify=False, organization=organization)
 except Exception as error:
-    print "Could not set up connection:\n{}".format(error.message)
+    print("Could not set up connection:\n{}".format(error.message))
     sys.exit()
 
 passed_args['config_obj'] = config
@@ -103,5 +104,5 @@ logger.debug(
 try:
     mod.main(**passed_args)
 except Exception as error:
-    print "Execution failed. Error was:\n{}".format(error.message)
+    print("Execution failed. Error was:\n{}".format(error.message))
     sys.exit(1)

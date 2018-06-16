@@ -13,6 +13,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
 import cmd
 from katlibs.modules import promote_cv
 import shlex
@@ -59,11 +60,11 @@ class Katloop(cmd.Cmd):  # TODO: Fix name from "Cmd" to something more descripti
         )
 
     def help_promote(self):
-        print "Promote a content view to a givent environment. Optionally you can specify a version."
-        print "Promote newest version:"
-        print "   promote <content view name> <environment>"
-        print "promote specific version:"
-        print "   promote <content view name>/<version> <environment>"
+        print("Promote a content view to a givent environment. Optionally you can specify a version.")
+        print("Promote newest version:")
+        print("   promote <content view name> <environment>")
+        print("promote specific version:")
+        print("   promote <content view name>/<version> <environment>")
 
     def do_list_cviews(self, line):
         splitted_options = shlex.split(line)
@@ -72,7 +73,7 @@ class Katloop(cmd.Cmd):  # TODO: Fix name from "Cmd" to something more descripti
             return
         for cview in self.connection.content_views:
             cview_name = cview['name']
-            print cview_name
+            print(cview_name)
             try:
                 versions = get_components(self.connection.content_views, ('name', cview_name))['versions']
             except KeyError:
@@ -81,24 +82,24 @@ class Katloop(cmd.Cmd):  # TODO: Fix name from "Cmd" to something more descripti
             if '-v' in splitted_options:
                 for version in versions:
                     # TODO: list environment after the version
-                    print '    Version: {} ({})'.format(version['version'], version['published'])
+                    print('    Version: {} ({})'.format(version['version'], version['published']))
 
     def help_list_cviews(self):
-        print "Print content views." \
-              "Pass -j to list them in all their json glory, -v to list the versions of the views as well"
+        print("Print content views.")
+        print("Pass -j to list them in all their json glory, -v to list the versions of the views as well")
 
     def postloop(self):
-        print
+        print()
 
     def do_exit(self, line):
-        print
+        print()
         sys.exit()
 
     def help_exit(self):
-        print "Exit the repl"
+        print("Exit the repl")
 
     def do_EOF(self, line):
-        print
+        print()
         sys.exit()
 
 
