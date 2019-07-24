@@ -79,6 +79,9 @@ def recursive_update(connection, cvs, logger, comp_excludes=[]):
     for view in all_views:
         viewids_to_update = viewids_to_update + [c['content_view_id'] for c in view['components'] if
                                                  c['content_view']['name'] in cvs]
+        if view['name'] in cvs:
+            if not view['composite']:
+                viewids_to_update = viewids_to_update + [view['id']]
 
     if not viewids_to_update:
         raise NotFoundError('No composite views containing any of "{}"'.format(', '.join(cvs)))
