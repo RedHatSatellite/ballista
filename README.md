@@ -178,4 +178,4 @@ All above command line options can also be defined in an ini configuration file 
 Ballista is maintained primarily at [Github](https://github.com/RedHatSatellite/ballista). Merge requests or issues should be created there.
 
 # Authors
-Ballista is written by Yoram Hekma <hekma.yoram@gmail.com> and Joey Loman <joey@binbash.org>.
+Ballista is written by [Yoram Hekma](https://github.com/yhekma) and Joey Loman <joey@binbash.org>.
